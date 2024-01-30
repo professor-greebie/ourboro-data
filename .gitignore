@@ -1,4 +1,4 @@
 /target
-/data/scratch/
-/data/quick/
-/data/output/
+/data/scratch/*
+/data/resources/quick/*
+/data/resources/output/*
