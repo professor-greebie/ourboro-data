@@ -68,6 +68,83 @@ pub struct PostalCode {
     pub dguid: String,
 }
 
+impl PostalCode {
+    pub fn from(line: &String) -> Self {
+        let province = line[FORWARD_SORTATION_AREA_END..PROVINCE_END].to_string();
+        let census_subdivision_id = line[CENSUS_DIVISION_ID_END..CENSUS_SUBDIVISION_ID_END].to_string();
+        let dissemation_area_id = line[POPULATION_CENTER_RA_TYPE_END..DISSEMINATION_AREA_ID_END].to_string();
+        Self {
+          postal_code : line[..POSTAL_CODE_END].to_string(),
+          forward_sortation_area : line[POSTAL_CODE_END..FORWARD_SORTATION_AREA_END].to_string(),
+          province : province.clone().to_string(),
+          province_iso3166_2 : fssa_province_to_iso3166_2(&province),
+          census_division_id  : line[PROVINCE_END..CENSUS_DIVISION_ID_END].to_string(),
+          census_subdivision_id  :
+            census_subdivision_id.clone().to_string(),
+          census_subdivision_name  :
+            line[CENSUS_SUBDIVISION_ID_END..CENSUS_SUBDIVISION_NAME_END].to_string() ,
+          census_subdivision_type  :
+            line[CENSUS_SUBDIVISION_NAME_END..CENSUS_SUBDIVISION_TYPE_END].to_string() ,
+          census_subdivision_code  :
+            line[CENSUS_SUBDIVISION_TYPE_END..CENSUS_SUBDIVISION_CODE_END].to_string() ,
+          statistical_area_class  :
+            line[CENSUS_SUBDIVISION_CODE_END..STATISTICAL_AREA_CLASS_END].to_string() ,
+          statistical_area_type  :
+            line[STATISTICAL_AREA_CLASS_END..STATISTICAL_AREA_TYPE_END].to_string() ,
+          census_tract_name  : line[STATISTICAL_AREA_TYPE_END..CENSUS_TRACT_NAME_END].to_string() ,
+          economic_region_code  :
+            line[CENSUS_TRACT_NAME_END..ECONOMIC_REGION_CODE_END].to_string() ,
+          designated_place_code  :
+            line[ECONOMIC_REGION_CODE_END..DESIGNATED_PLACE_CODE_END].to_string() ,
+          federal_electoral_district_code  :
+            line[DESIGNATED_PLACE_CODE_END..FEDERAL_ELECTORAL_DISTRICT_CODE_END].to_string() ,
+          population_center_ra  :
+            line[FEDERAL_ELECTORAL_DISTRICT_CODE_END..POPULATION_CENTER_RA_END].to_string() ,
+          population_center_ra_type  :
+            line[POPULATION_CENTER_RA_END..POPULATION_CENTER_RA_TYPE_END].to_string() ,
+          dissemation_area_id  :
+            dissemation_area_id.clone().to_string() ,
+          dissemation_block_code  :
+            line[DISSEMINATION_AREA_ID_END..DISSEMINATION_BLOCK_CODE_END].to_string() ,
+          representative_point_type  :
+            line[DISSEMINATION_BLOCK_CODE_END..REPRESENTATIVE_POINT_TYPE_END].to_string() ,
+          point_latitude  : line[REPRESENTATIVE_POINT_TYPE_END..POINT_LATITUDE_END].to_string() ,
+          point_longitude  : line[POINT_LATITUDE_END..POINT_LONGITUDE_END].to_string() ,
+          single_link_indicator  :
+            line[POINT_LONGITUDE_END..SINGLE_LINK_INDICATOR_END].to_string() ,
+          pc_type  : line[SINGLE_LINK_INDICATOR_END..PC_TYPE_END].to_string() ,
+          community_name  : line[PC_TYPE_END..COMMUNITY_NAME_END].to_string() ,
+          delivery_mode  : line[COMMUNITY_NAME_END..DELIVERY_MODE_END].to_string() ,
+          historic_delivery_mode  :
+            line[DELIVERY_MODE_END..HISTORIC_DELIVERY_MODE_END].to_string() ,
+          birth_date  : line[HISTORIC_DELIVERY_MODE_END..BIRTH_DATE_END].to_string() ,
+          retired_date  : line[BIRTH_DATE_END..RETIRED_DATE_END].to_string() ,
+          delivery_installation  : line[RETIRED_DATE_END..DELIVERY_INSTALLATION_END].to_string() ,
+          quality_indicator  : line[DELIVERY_INSTALLATION_END..QUALITY_INDICATOR_END].to_string() ,
+          source_geo  : line[QUALITY_INDICATOR_END..SOURCE_GEO_END].to_string() ,
+          population_centre_and_rural_area_indicator  :
+            line[SOURCE_GEO_END..POPULATION_CENTRE_AND_RURAL_AREA_INDICATOR_END].to_string() ,
+          dguid  : dissemation_area_id.clone().to_string(),
+    }
+}
+pub fn is_filtered_postal_code(line: &String, filter: Option<String>) -> bool {
+    let postal_code: String = line[..POSTAL_CODE_END].to_string();
+    if filter.is_none() {
+        return true;
+    }
+    let filter_real = filter.unwrap(); 
+    postal_code[..filter_real.len()].contains(&filter_real)
+}
+
+pub fn is_filtered_province(line: &String, filter: Option<String>) -> bool {
+    let province: String = line[FORWARD_SORTATION_AREA_END..PROVINCE_END].to_string();
+    if filter.is_none() {
+        return true;
+    }
+    let filter_real = filter.unwrap();
+    province == filter_real ||  fssa_province_to_iso3166_2(&province) == filter_real
+}
+}
 
 pub fn fssa_province_to_iso3166_2(fsa: &String) -> String {
     match fsa.as_str() {
@@ -84,127 +161,11 @@ pub fn fssa_province_to_iso3166_2(fsa: &String) -> String {
         "60" => "YK".to_string(),
         "61" => "NT".to_string(),
         "62" => "NU".to_string(),
-        _ => "XX".to_string()
+        _ => "XX".to_string(),
     }
 }
 
-pub fn is_filtered_postal_code(line: &String, filter: &String) -> bool {
-    let postal_code: String = line[..POSTAL_CODE_END].to_string();
-    if filter == "NONE" {
-        return true;
-    }
-    return postal_code[..filter.len()].contains(filter.as_str());
-}
 
-pub fn is_filtered_province(line: &String, filter: &String) -> bool {
-    let province: String = line[FORWARD_SORTATION_AREA_END..PROVINCE_END].to_string();
-    if filter == "NONE" {
-        return true;
-    } else if province == filter.as_str() {
-        return true;
-    } else if fssa_province_to_iso3166_2(&province) == filter.as_str() {
-        return true;
-    } 
-    return false;
-}
-
-/// Should be a struct eventually
-pub fn create_postal_code(line: &String) -> PostalCode {
-    let postal_code: String = line[..POSTAL_CODE_END].to_string();
-    let forward_sortation_area: String =
-        line[POSTAL_CODE_END..FORWARD_SORTATION_AREA_END].to_string();
-    let province = line[FORWARD_SORTATION_AREA_END..PROVINCE_END].to_string();
-    let province_iso3166_2: String = fssa_province_to_iso3166_2(&province);
-    let census_division_id: String = line[PROVINCE_END..CENSUS_DIVISION_ID_END].to_string();
-    let census_subdivision_id: String =
-        line[CENSUS_DIVISION_ID_END..CENSUS_SUBDIVISION_ID_END].to_string();
-    let census_subdivision_name: String =
-        line[CENSUS_SUBDIVISION_ID_END..CENSUS_SUBDIVISION_NAME_END].to_string();
-    let census_subdivision_type: String =
-        line[CENSUS_SUBDIVISION_NAME_END..CENSUS_SUBDIVISION_TYPE_END].to_string();
-    let census_subdivision_code: String =
-        line[CENSUS_SUBDIVISION_TYPE_END..CENSUS_SUBDIVISION_CODE_END].to_string();
-    let statistical_area_class: String =
-        line[CENSUS_SUBDIVISION_CODE_END..STATISTICAL_AREA_CLASS_END].to_string();
-    let statistical_area_type: String =
-        line[STATISTICAL_AREA_CLASS_END..STATISTICAL_AREA_TYPE_END].to_string();
-    let census_tract_name: String =
-        line[STATISTICAL_AREA_TYPE_END..CENSUS_TRACT_NAME_END].to_string();
-    let economic_region_code: String =
-        line[CENSUS_TRACT_NAME_END..ECONOMIC_REGION_CODE_END].to_string();
-    let designated_place_code: String =
-        line[ECONOMIC_REGION_CODE_END..DESIGNATED_PLACE_CODE_END].to_string();
-    let federal_electoral_district_code: String =
-        line[DESIGNATED_PLACE_CODE_END..FEDERAL_ELECTORAL_DISTRICT_CODE_END].to_string();
-    let population_center_ra: String =
-        line[FEDERAL_ELECTORAL_DISTRICT_CODE_END..POPULATION_CENTER_RA_END].to_string();
-    let population_center_ra_type: String =
-        line[POPULATION_CENTER_RA_END..POPULATION_CENTER_RA_TYPE_END].to_string();
-    let dissemation_area_id: String =
-        line[POPULATION_CENTER_RA_TYPE_END..DISSEMINATION_AREA_ID_END].to_string();
-    let dissemation_block_code: String =
-        line[DISSEMINATION_AREA_ID_END..DISSEMINATION_BLOCK_CODE_END].to_string();
-    let representative_point_type: String =
-        line[DISSEMINATION_BLOCK_CODE_END..REPRESENTATIVE_POINT_TYPE_END].to_string();
-    let point_latitude: String =
-        line[REPRESENTATIVE_POINT_TYPE_END..POINT_LATITUDE_END].to_string();
-    let point_longitude: String = line[POINT_LATITUDE_END..POINT_LONGITUDE_END].to_string();
-    let single_link_indicator: String =
-        line[POINT_LONGITUDE_END..SINGLE_LINK_INDICATOR_END].to_string();
-    let pc_type: String = line[SINGLE_LINK_INDICATOR_END..PC_TYPE_END].to_string();
-    let community_name: String = line[PC_TYPE_END..COMMUNITY_NAME_END].to_string();
-    let delivery_mode: String = line[COMMUNITY_NAME_END..DELIVERY_MODE_END].to_string();
-    let historic_delivery_mode: String =
-        line[DELIVERY_MODE_END..HISTORIC_DELIVERY_MODE_END].to_string();
-    let birth_date: String = line[HISTORIC_DELIVERY_MODE_END..BIRTH_DATE_END].to_string();
-    let retired_date: String = line[BIRTH_DATE_END..RETIRED_DATE_END].to_string();
-    let delivery_installation: String =
-        line[RETIRED_DATE_END..DELIVERY_INSTALLATION_END].to_string();
-    let quality_indicator: String =
-        line[DELIVERY_INSTALLATION_END..QUALITY_INDICATOR_END].to_string();
-    let source_geo: String = line[QUALITY_INDICATOR_END..SOURCE_GEO_END].to_string();
-    let population_centre_and_rural_area_indicator: String =
-        line[SOURCE_GEO_END..POPULATION_CENTRE_AND_RURAL_AREA_INDICATOR_END].to_string();
-    let dguid: String = census_subdivision_id.clone().to_string();
-
-    let postal_code_struct = PostalCode {
-        postal_code,
-        forward_sortation_area,
-        province,
-        province_iso3166_2,
-        census_division_id,
-        census_subdivision_id,
-        census_subdivision_name,
-        census_subdivision_type,
-        census_subdivision_code,
-        statistical_area_class,
-        statistical_area_type,
-        census_tract_name,
-        economic_region_code,
-        designated_place_code,
-        federal_electoral_district_code,
-        population_center_ra,
-        population_center_ra_type,
-        dissemation_area_id,
-        dissemation_block_code,
-        representative_point_type,
-        point_latitude,
-        point_longitude,
-        single_link_indicator,
-        pc_type,
-        community_name,
-        delivery_mode,
-        historic_delivery_mode,
-        birth_date,
-        retired_date,
-        delivery_installation,
-        quality_indicator,
-        source_geo,
-        population_centre_and_rural_area_indicator,
-        dguid,
-    };
-    postal_code_struct
-}
 
 #[cfg(test)]
 mod tests {
@@ -212,15 +173,17 @@ mod tests {
 
     #[test]
     fn it_filters_a_line_by_postal_code() {
-        let test_line: String = "A0A1A0FSA24CDUI_CSDUI__seventy_characters_reserved_for_the_census_subdivision_".to_string();
-        let filter_true: String = "A0A".to_string();
-        let filter_false: String = "A0B".to_string();
-        let filter_true_short = "A0".to_string();
-        let filter_false_short = "A1".to_string();
-        let actual_true = is_filtered_postal_code(&test_line, &filter_true);
-        let actual_false = is_filtered_postal_code(&test_line, &filter_false);
-        let actual_true_short = is_filtered_postal_code(&test_line, &filter_true_short);
-        let actual_false_short = is_filtered_postal_code(&test_line.clone(), &filter_false_short);
+        let test_line: String =
+            "A0A1A0FSA24CDUI_CSDUI__seventy_characters_reserved_for_the_census_subdivision_"
+                .to_string();
+        let filter_true: Option<String> = Some("A0A".to_string());
+        let filter_false: Option<String> = Some("A0B".to_string());
+        let filter_true_short = Some("A0".to_string());
+        let filter_false_short = Some("A1".to_string());
+        let actual_true = PostalCode::is_filtered_postal_code(&test_line, filter_true);
+        let actual_false = PostalCode::is_filtered_postal_code(&test_line, filter_false);
+        let actual_true_short = PostalCode::is_filtered_postal_code(&test_line, filter_true_short);
+        let actual_false_short = PostalCode::is_filtered_postal_code(&test_line.clone(), filter_false_short);
         assert!(actual_true);
         assert!(!actual_false);
         assert!(actual_true_short);
@@ -228,11 +191,13 @@ mod tests {
     }
 
     fn it_filters_a_line_by_province() {
-        let test_line: String = "A0A1A0FSA24CDUI_CSDUI__seventy_characters_reserved_for_the_census_subdivision_".to_string();
-        let filter_true: String = "QC".to_string();
-        let filter_false: String = "PE".to_string();
-        let actual_true = is_filtered_province(&test_line, &filter_true);
-        let actual_false = is_filtered_province(&test_line, &filter_false);
+        let test_line: String =
+            "A0A1A0FSA24CDUI_CSDUI__seventy_characters_reserved_for_the_census_subdivision_"
+                .to_string();
+        let filter_true: Option<String> = Some("QC".to_string());
+        let filter_false: Option<String> = Some("PE".to_string());
+        let actual_true = PostalCode::is_filtered_province(&test_line, filter_true);
+        let actual_false = PostalCode::is_filtered_province(&test_line, filter_false);
         assert!(actual_true);
         assert!(!actual_false);
     }
@@ -245,7 +210,7 @@ mod tests {
     ._LATITUDE___LONGITUDE___.+_COMMUNITY_NAME______________/|H_B_DATE_RETIREDD$QI_@#"
                 .to_string();
         dbg!(test_line.len());
-        let postal_code_struct = create_postal_code(&test_line);
+        let postal_code_struct = PostalCode::from(&test_line);
         let expected = "A0A1A0";
         let actual = postal_code_struct.postal_code;
         assert_eq!(expected, actual);

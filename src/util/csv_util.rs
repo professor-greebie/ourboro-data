@@ -35,7 +35,7 @@ fn read_xlsx(path: &str) -> Vec<Vec<String>> {
     result
 }
 
-fn write_csv(path: &str, lines: Vec<Vec<String>>) {
+pub fn write_csv(path: &str, lines: Vec<Vec<String>>) {
     let mut wtr = csv::Writer::from_path(path).unwrap();
     for line in lines {
         wtr.write_record(line).unwrap();

@@ -1,6 +1,7 @@
-mod pccf;
-mod util;
-mod census;
+pub mod pccf;
+pub mod util;
+pub mod census;
+
 
 #[cfg(test)]
 mod tests {

@@ -4,7 +4,7 @@ pub struct CensusPopulationStruct {
     pub population: Vec<String>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum CensusFilter {
     Population2021,
     Population2016,
@@ -34,6 +34,7 @@ pub enum CensusFilter {
     HouseholdsSpending30PercentOrMoreOfIncomeOnShelter,
     ImmigrantStatusImmigrant,
     ImmigrantStatusNonImmigrant,
+    UnknownFilter
 }
 
 impl CensusFilter {
@@ -79,12 +80,13 @@ impl CensusFilter {
             }
             Self::ImmigrantStatusImmigrant => "immigrant_status_immigrant".to_string(),
             Self::ImmigrantStatusNonImmigrant => "immigrant_status_non_immigrant".to_string(),
+            Self::UnknownFilter => "unknown_filter".to_string(),
 
 
         }
     }
 
-    pub fn filterString(self) -> String {
+    pub fn filter_string(self) -> String {
         match self {
             Self::Population2021 => "Population, 2021".to_string(),
             Self::Population2016 => "Population, 2016".to_string(),
@@ -145,9 +147,10 @@ impl CensusFilter {
             }
             Self::ImmigrantStatusImmigrant => "Immigrants".to_string(),
             Self::ImmigrantStatusNonImmigrant => "Non-immigrants".to_string(),
+            Self::UnknownFilter => "Unknown Filter".to_string(),
         }
     }
-    pub fn filterColumn(self) -> usize {
+    pub fn filter_column(self) -> usize {
         match self {
             Self::Population2021 => 1,
             Self::Population2016 => 2,
@@ -177,6 +180,7 @@ impl CensusFilter {
             Self::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter => 1467,
             Self::ImmigrantStatusImmigrant => 1529,
             Self::ImmigrantStatusNonImmigrant => 1528,
+            Self::UnknownFilter => 0,
         }
     }
 }
