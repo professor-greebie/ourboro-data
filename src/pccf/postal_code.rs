@@ -32,40 +32,40 @@ const SOURCE_GEO_END: usize = 216;
 const POPULATION_CENTRE_AND_RURAL_AREA_INDICATOR_END: usize = 217;
 
 pub struct PostalCode {
-    pub postal_code: String,
-    forward_sortation_area: String,
-    province: String,
-    province_iso3166_2: String,
-    census_division_id: String,
-    census_subdivision_id: String,
-    census_subdivision_name: String,
-    census_subdivision_type: String,
-    census_subdivision_code: String,
-    statistical_area_class: String,
-    statistical_area_type: String,
-    census_tract_name: String,
-    economic_region_code: String,
-    designated_place_code: String,
-    federal_electoral_district_code: String,
-    population_center_ra: String,
-    population_center_ra_type: String,
-    dissemation_area_id: String,
-    dissemation_block_code: String,
-    representative_point_type: String,
-    point_latitude: String,
-    point_longitude: String,
-    single_link_indicator: String,
-    pc_type: String,
-    community_name: String,
-    delivery_mode: String,
-    historic_delivery_mode: String,
-    birth_date: String,
-    retired_date: String,
-    delivery_installation: String,
-    quality_indicator: String,
-    source_geo: String,
-    population_centre_and_rural_area_indicator: String,
-    pub dguid: String,
+    pub _postal_code: String,
+    _forward_sortation_area: String,
+    _province: String,
+    _province_iso3166_2: String,
+    _census_division_id: String,
+    _census_subdivision_id: String,
+    _census_subdivision_name: String,
+    _census_subdivision_type: String,
+    _census_subdivision_code: String,
+    _statistical_area_class: String,
+    _statistical_area_type: String,
+    _census_tract_name: String,
+    _economic_region_code: String,
+    _designated_place_code: String,
+    _federal_electoral_district_code: String,
+    _population_center_ra: String,
+    _population_center_ra_type: String,
+    _dissemation_area_id: String,
+    _dissemation_block_code: String,
+    _representative_point_type: String,
+    _point_latitude: String,
+    _point_longitude: String,
+    _single_link_indicator: String,
+    _pc_type: String,
+    _community_name: String,
+    _delivery_mode: String,
+    _historic_delivery_mode: String,
+    _birth_date: String,
+    _retired_date: String,
+    _delivery_installation: String,
+    _quality_indicator: String,
+    _source_geo: String,
+    _population_centre_and_rural_area_indicator: String,
+    pub _dguid: String,
 }
 
 impl PostalCode {
@@ -74,57 +74,57 @@ impl PostalCode {
         let census_subdivision_id = line[CENSUS_DIVISION_ID_END..CENSUS_SUBDIVISION_ID_END].to_string();
         let dissemation_area_id = line[POPULATION_CENTER_RA_TYPE_END..DISSEMINATION_AREA_ID_END].to_string();
         Self {
-          postal_code : line[..POSTAL_CODE_END].to_string(),
-          forward_sortation_area : line[POSTAL_CODE_END..FORWARD_SORTATION_AREA_END].to_string(),
-          province : province.clone().to_string(),
-          province_iso3166_2 : fssa_province_to_iso3166_2(&province),
-          census_division_id  : line[PROVINCE_END..CENSUS_DIVISION_ID_END].to_string(),
-          census_subdivision_id  :
+          _postal_code : line[..POSTAL_CODE_END].to_string(),
+          _forward_sortation_area : line[POSTAL_CODE_END..FORWARD_SORTATION_AREA_END].to_string(),
+          _province : province.clone().to_string(),
+          _province_iso3166_2 : fssa_province_to_iso3166_2(&province),
+          _census_division_id  : line[PROVINCE_END..CENSUS_DIVISION_ID_END].to_string(),
+          _census_subdivision_id  :
             census_subdivision_id.clone().to_string(),
-          census_subdivision_name  :
+          _census_subdivision_name  :
             line[CENSUS_SUBDIVISION_ID_END..CENSUS_SUBDIVISION_NAME_END].to_string() ,
-          census_subdivision_type  :
+          _census_subdivision_type  :
             line[CENSUS_SUBDIVISION_NAME_END..CENSUS_SUBDIVISION_TYPE_END].to_string() ,
-          census_subdivision_code  :
+          _census_subdivision_code  :
             line[CENSUS_SUBDIVISION_TYPE_END..CENSUS_SUBDIVISION_CODE_END].to_string() ,
-          statistical_area_class  :
+          _statistical_area_class  :
             line[CENSUS_SUBDIVISION_CODE_END..STATISTICAL_AREA_CLASS_END].to_string() ,
-          statistical_area_type  :
+          _statistical_area_type  :
             line[STATISTICAL_AREA_CLASS_END..STATISTICAL_AREA_TYPE_END].to_string() ,
-          census_tract_name  : line[STATISTICAL_AREA_TYPE_END..CENSUS_TRACT_NAME_END].to_string() ,
-          economic_region_code  :
+          _census_tract_name  : line[STATISTICAL_AREA_TYPE_END..CENSUS_TRACT_NAME_END].to_string() ,
+          _economic_region_code  :
             line[CENSUS_TRACT_NAME_END..ECONOMIC_REGION_CODE_END].to_string() ,
-          designated_place_code  :
+          _designated_place_code  :
             line[ECONOMIC_REGION_CODE_END..DESIGNATED_PLACE_CODE_END].to_string() ,
-          federal_electoral_district_code  :
+          _federal_electoral_district_code  :
             line[DESIGNATED_PLACE_CODE_END..FEDERAL_ELECTORAL_DISTRICT_CODE_END].to_string() ,
-          population_center_ra  :
+          _population_center_ra  :
             line[FEDERAL_ELECTORAL_DISTRICT_CODE_END..POPULATION_CENTER_RA_END].to_string() ,
-          population_center_ra_type  :
+          _population_center_ra_type  :
             line[POPULATION_CENTER_RA_END..POPULATION_CENTER_RA_TYPE_END].to_string() ,
-          dissemation_area_id  :
+          _dissemation_area_id  :
             dissemation_area_id.clone().to_string() ,
-          dissemation_block_code  :
+          _dissemation_block_code  :
             line[DISSEMINATION_AREA_ID_END..DISSEMINATION_BLOCK_CODE_END].to_string() ,
-          representative_point_type  :
+          _representative_point_type  :
             line[DISSEMINATION_BLOCK_CODE_END..REPRESENTATIVE_POINT_TYPE_END].to_string() ,
-          point_latitude  : line[REPRESENTATIVE_POINT_TYPE_END..POINT_LATITUDE_END].to_string() ,
-          point_longitude  : line[POINT_LATITUDE_END..POINT_LONGITUDE_END].to_string() ,
-          single_link_indicator  :
+          _point_latitude  : line[REPRESENTATIVE_POINT_TYPE_END..POINT_LATITUDE_END].to_string() ,
+          _point_longitude  : line[POINT_LATITUDE_END..POINT_LONGITUDE_END].to_string() ,
+          _single_link_indicator  :
             line[POINT_LONGITUDE_END..SINGLE_LINK_INDICATOR_END].to_string() ,
-          pc_type  : line[SINGLE_LINK_INDICATOR_END..PC_TYPE_END].to_string() ,
-          community_name  : line[PC_TYPE_END..COMMUNITY_NAME_END].to_string() ,
-          delivery_mode  : line[COMMUNITY_NAME_END..DELIVERY_MODE_END].to_string() ,
-          historic_delivery_mode  :
+          _pc_type  : line[SINGLE_LINK_INDICATOR_END..PC_TYPE_END].to_string() ,
+          _community_name  : line[PC_TYPE_END..COMMUNITY_NAME_END].to_string() ,
+          _delivery_mode  : line[COMMUNITY_NAME_END..DELIVERY_MODE_END].to_string() ,
+          _historic_delivery_mode  :
             line[DELIVERY_MODE_END..HISTORIC_DELIVERY_MODE_END].to_string() ,
-          birth_date  : line[HISTORIC_DELIVERY_MODE_END..BIRTH_DATE_END].to_string() ,
-          retired_date  : line[BIRTH_DATE_END..RETIRED_DATE_END].to_string() ,
-          delivery_installation  : line[RETIRED_DATE_END..DELIVERY_INSTALLATION_END].to_string() ,
-          quality_indicator  : line[DELIVERY_INSTALLATION_END..QUALITY_INDICATOR_END].to_string() ,
-          source_geo  : line[QUALITY_INDICATOR_END..SOURCE_GEO_END].to_string() ,
-          population_centre_and_rural_area_indicator  :
+          _birth_date  : line[HISTORIC_DELIVERY_MODE_END..BIRTH_DATE_END].to_string() ,
+          _retired_date  : line[BIRTH_DATE_END..RETIRED_DATE_END].to_string() ,
+          _delivery_installation  : line[RETIRED_DATE_END..DELIVERY_INSTALLATION_END].to_string() ,
+          _quality_indicator  : line[DELIVERY_INSTALLATION_END..QUALITY_INDICATOR_END].to_string() ,
+          _source_geo  : line[QUALITY_INDICATOR_END..SOURCE_GEO_END].to_string() ,
+          _population_centre_and_rural_area_indicator  :
             line[SOURCE_GEO_END..POPULATION_CENTRE_AND_RURAL_AREA_INDICATOR_END].to_string() ,
-          dguid  : dissemation_area_id.clone().to_string(),
+          _dguid  : dissemation_area_id.clone().to_string(),
     }
 }
 pub fn is_filtered_postal_code(line: &String, filter: Option<String>) -> bool {
@@ -134,6 +134,14 @@ pub fn is_filtered_postal_code(line: &String, filter: Option<String>) -> bool {
     }
     let filter_real = filter.unwrap(); 
     postal_code[..filter_real.len()].contains(&filter_real)
+}
+
+pub fn is_filtered_postal_code_list(line: &String, filter: &Vec<String>) -> bool {
+    let postal_code: String = line[..POSTAL_CODE_END].to_string();
+    if filter.is_empty() {
+        return true;
+    }
+    filter.iter().any(|f| postal_code[..f.len()].contains(f))
 }
 
 pub fn is_filtered_province(line: &String, filter: Option<String>) -> bool {
@@ -190,6 +198,7 @@ mod tests {
         assert!(!actual_false_short);
     }
 
+    #[test]
     fn it_filters_a_line_by_province() {
         let test_line: String =
             "A0A1A0FSA24CDUI_CSDUI__seventy_characters_reserved_for_the_census_subdivision_"
@@ -212,140 +221,140 @@ mod tests {
         dbg!(test_line.len());
         let postal_code_struct = PostalCode::from(&test_line);
         let expected = "A0A1A0";
-        let actual = postal_code_struct.postal_code;
+        let actual = postal_code_struct._postal_code;
         assert_eq!(expected, actual);
         let fsa_expected = "FSA";
-        let fsa_actual = postal_code_struct.forward_sortation_area;
+        let fsa_actual = postal_code_struct._forward_sortation_area;
         assert_eq!(fsa_expected, fsa_actual);
         let province_expected = "24";
-        let province_actual = postal_code_struct.province;
+        let province_actual = postal_code_struct._province;
         assert_eq!(province_expected, province_actual);
         let province_iso3166_2_expected = "QC";
-        let province_iso3166_2_actual = postal_code_struct.province_iso3166_2;
+        let province_iso3166_2_actual = postal_code_struct._province_iso3166_2;
         assert_eq!(province_iso3166_2_expected, province_iso3166_2_actual);
         let census_division_id_expected = "CDUI";
-        let census_division_id_actual = postal_code_struct.census_division_id;
+        let census_division_id_actual = postal_code_struct._census_division_id;
         assert_eq!(census_division_id_expected, census_division_id_actual);
         let census_subdivision_id_expected = "_CSDUI_";
-        let census_subdivision_id_actual = postal_code_struct.census_subdivision_id;
+        let census_subdivision_id_actual = postal_code_struct._census_subdivision_id;
         assert_eq!(census_subdivision_id_expected, census_subdivision_id_actual);
         let census_subdivision_name_expected =
             "_seventy_characters_reserved_for_the_census_subdivision_\
         that_include__";
-        let census_subdivision_name_actual = postal_code_struct.census_subdivision_name;
+        let census_subdivision_name_actual = postal_code_struct._census_subdivision_name;
         assert_eq!(
             census_subdivision_name_expected,
             census_subdivision_name_actual
         );
         let census_subdivision_type_expected = "CDT";
-        let census_subdivision_type_actual = postal_code_struct.census_subdivision_type;
+        let census_subdivision_type_actual = postal_code_struct._census_subdivision_type;
         assert_eq!(
             census_subdivision_type_expected,
             census_subdivision_type_actual
         );
         let census_subdivision_code_expected = "CCS";
-        let census_subdivision_code_actual = postal_code_struct.census_subdivision_code;
+        let census_subdivision_code_actual = postal_code_struct._census_subdivision_code;
         assert_eq!(
             census_subdivision_code_expected,
             census_subdivision_code_actual
         );
         let statistical_area_class_expected = "SAC";
-        let statistical_area_class_actual = postal_code_struct.statistical_area_class;
+        let statistical_area_class_actual = postal_code_struct._statistical_area_class;
         assert_eq!(
             statistical_area_class_expected,
             statistical_area_class_actual
         );
         let statistical_area_type_expected = "X";
-        let statistical_area_type_actual = postal_code_struct.statistical_area_type;
+        let statistical_area_type_actual = postal_code_struct._statistical_area_type;
         assert_eq!(statistical_area_type_expected, statistical_area_type_actual);
         let census_tract_name_expected = "CTNAME_";
-        let census_tract_name_actual = postal_code_struct.census_tract_name;
+        let census_tract_name_actual = postal_code_struct._census_tract_name;
         assert_eq!(census_tract_name_expected, census_tract_name_actual);
         let economic_region_code_expected = "ER";
-        let economic_region_code_actual = postal_code_struct.economic_region_code;
+        let economic_region_code_actual = postal_code_struct._economic_region_code;
         assert_eq!(economic_region_code_expected, economic_region_code_actual);
         let designated_place_code_expected = "DPL_";
-        let designated_place_code_actual = postal_code_struct.designated_place_code;
+        let designated_place_code_actual = postal_code_struct._designated_place_code;
         assert_eq!(designated_place_code_expected, designated_place_code_actual);
         let federal_electoral_district_code_expected = "FED13";
         let federal_electoral_district_code_actual =
-            postal_code_struct.federal_electoral_district_code;
+            postal_code_struct._federal_electoral_district_code;
         assert_eq!(
             federal_electoral_district_code_expected,
             federal_electoral_district_code_actual
         );
         let population_center_ra_expected = "POPC";
-        let population_center_ra_actual = postal_code_struct.population_center_ra;
+        let population_center_ra_actual = postal_code_struct._population_center_ra;
         assert_eq!(population_center_ra_expected, population_center_ra_actual);
         let population_center_ra_type_expected = "P";
-        let population_center_ra_type_actual = postal_code_struct.population_center_ra_type;
+        let population_center_ra_type_actual = postal_code_struct._population_center_ra_type;
         assert_eq!(
             population_center_ra_type_expected,
             population_center_ra_type_actual
         );
         let dissemation_area_id_expected = "_DAuid__";
-        let dissemation_area_id_actual = postal_code_struct.dissemation_area_id;
+        let dissemation_area_id_actual = postal_code_struct._dissemation_area_id;
         assert_eq!(dissemation_area_id_expected, dissemation_area_id_actual);
         let dissemation_block_code_expected = "DB_";
-        let dissemation_block_code_actual = postal_code_struct.dissemation_block_code;
+        let dissemation_block_code_actual = postal_code_struct._dissemation_block_code;
         assert_eq!(
             dissemation_block_code_expected,
             dissemation_block_code_actual
         );
         let representative_point_type_expected = ".";
-        let representative_point_type_actual = postal_code_struct.representative_point_type;
+        let representative_point_type_actual = postal_code_struct._representative_point_type;
         assert_eq!(
             representative_point_type_expected,
             representative_point_type_actual
         );
         let point_latitude_expected = "_LATITUDE__";
-        let point_latitude_actual = postal_code_struct.point_latitude;
+        let point_latitude_actual = postal_code_struct._point_latitude;
         assert_eq!(point_latitude_expected, point_latitude_actual);
         let point_longitude_expected = "_LONGITUDE___";
-        let point_longitude_actual = postal_code_struct.point_longitude;
+        let point_longitude_actual = postal_code_struct._point_longitude;
         assert_eq!(point_longitude_expected, point_longitude_actual);
         let single_link_indicator_expected = ".";
-        let single_link_indicator_actual = postal_code_struct.single_link_indicator;
+        let single_link_indicator_actual = postal_code_struct._single_link_indicator;
         assert_eq!(single_link_indicator_expected, single_link_indicator_actual);
         let pc_type_expected = "+";
-        let pc_type_actual = postal_code_struct.pc_type;
+        let pc_type_actual = postal_code_struct._pc_type;
         assert_eq!(pc_type_expected, pc_type_actual);
         let community_name_expected = "_COMMUNITY_NAME______________/";
-        let community_name_actual = postal_code_struct.community_name;
+        let community_name_actual = postal_code_struct._community_name;
         assert_eq!(community_name_expected, community_name_actual);
         let delivery_mode_expected = "|";
-        let delivery_mode_actual = postal_code_struct.delivery_mode;
+        let delivery_mode_actual = postal_code_struct._delivery_mode;
         assert_eq!(delivery_mode_expected, delivery_mode_actual);
         let historic_delivery_mode_expected = "H";
-        let historic_delivery_mode_actual = postal_code_struct.historic_delivery_mode;
+        let historic_delivery_mode_actual = postal_code_struct._historic_delivery_mode;
         assert_eq!(
             historic_delivery_mode_expected,
             historic_delivery_mode_actual
         );
         let birth_date_expected = "_B_DATE_";
-        let birth_date_actual = postal_code_struct.birth_date;
+        let birth_date_actual = postal_code_struct._birth_date;
         assert_eq!(birth_date_expected, birth_date_actual);
         let retired_date_expected = "RETIREDD";
-        let retired_date_actual = postal_code_struct.retired_date;
+        let retired_date_actual = postal_code_struct._retired_date;
         assert_eq!(retired_date_expected, retired_date_actual);
         let delivery_installation_expected = "$";
-        let delivery_installation_actual = postal_code_struct.delivery_installation;
+        let delivery_installation_actual = postal_code_struct._delivery_installation;
         assert_eq!(delivery_installation_expected, delivery_installation_actual);
         let quality_indicator_expected = "QI_";
-        let quality_indicator_actual = postal_code_struct.quality_indicator;
+        let quality_indicator_actual = postal_code_struct._quality_indicator;
         assert_eq!(quality_indicator_expected, quality_indicator_actual);
         let source_geo_expected = "@";
-        let source_geo_actual = postal_code_struct.source_geo;
+        let source_geo_actual = postal_code_struct._source_geo;
         assert_eq!(source_geo_expected, source_geo_actual);
         let population_centre_and_rural_area_indicator_expected = "#";
         let population_centre_and_rural_area_indicator_actual =
-            postal_code_struct.population_centre_and_rural_area_indicator;
+            postal_code_struct._population_centre_and_rural_area_indicator;
         assert_eq!(
             population_centre_and_rural_area_indicator_expected,
             population_centre_and_rural_area_indicator_actual
         );
         let dguid_expected = "FSA24CDUI_CSDUI_";
-        let dguid_actual = postal_code_struct.dguid;
+        let dguid_actual = postal_code_struct._dguid;
         assert_eq!(dguid_expected, dguid_actual);
     }
 }

@@ -2,27 +2,28 @@ use crate::census::census_model::CensusFilter;
 use crate::pccf::PostalCode;
 use crate::util::csv_util;
 use crate::util::cli::Cli;
+use std::collections::VecDeque;
 use std::fs::{self, File};
 use std::io::{self, prelude::*, BufRead};
 use std::path::Path;
-
 use rayon::iter::ParallelBridge;
 use rayon::prelude::ParallelIterator;
 
 
 const TEMP_DIRECTORY: &str = "data/resources/tmp/";
-const OUTPUT_DIRECTORY: &str = "data/resources/output/";
+//const OUTPUT_DIRECTORY: &str = "data/resources/output/";
 const PCCF_TEMP_FILE: &str = "./data/resources/quick/PCCF_FCCP_V2312_2021.txt";
 
 pub fn read_and_clean_csv(path: &str) -> Vec<Vec<String>> {
-    let mut result = Vec::new();
+    let mut result = VecDeque::new();
     if let Ok(lines) = read_lines(path) {
         for line in lines.flatten() {
-            let cleaned = csv_util::split_csv_line(&line).into_iter().map(|s| s.to_string().replace(" ", "")).collect();
-            result.push(cleaned);
+            let cleaned: Vec<String> = csv_util::split_csv_line(&line).into_iter().map(|s| s.to_string().replace(" ", "")).collect();
+            result.push_back(cleaned);
         }
     }
-    result
+    result.pop_front();
+    Vec::from(result)
 }
 
 
@@ -35,6 +36,26 @@ pub fn read_pccf(postal_filter : Option<String>, province_filter : Option<String
                 .par_bridge()
                 .filter(|line| {
                     PostalCode::is_filtered_postal_code(&line, postal_filter.clone()) && PostalCode::is_filtered_province(&line, province_filter.clone())
+                })
+                .map(|line| {
+                    PostalCode::from(&line)
+                })
+                .collect();
+        }
+    }
+    temp_vec
+
+}
+
+pub fn read_pccf_filtered_postal_code_list(postal_filters: Vec<String>) -> Vec<PostalCode> {
+    let mut temp_vec: Vec<PostalCode> = Vec::new();
+    if Path::new(PCCF_TEMP_FILE).exists() {
+        if let Ok(lines) = read_lines(PCCF_TEMP_FILE) {
+            temp_vec = lines
+                .flatten()
+                .par_bridge()
+                .filter(|line| {
+                    PostalCode::is_filtered_postal_code_list(&line, &postal_filters)
                 })
                 .map(|line| {
                     PostalCode::from(&line)
@@ -73,6 +94,37 @@ pub fn read_pccf(postal_filter : Option<String>, province_filter : Option<String
 
 pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
     let mut census_filters: Vec<CensusFilter> = Vec::new();
+    if args.all.unwrap_or(false) {
+        census_filters.push(CensusFilter::Population2021);
+        census_filters.push(CensusFilter::LandArea);
+        census_filters.push(CensusFilter::TotalOccupiedDwellings);
+        census_filters.push(CensusFilter::TotalSingleDetachedHouses);
+        census_filters.push(CensusFilter::MedianAfterTaxIncome);
+        census_filters.push(CensusFilter::Population2016);
+        census_filters.push(CensusFilter::TotalSemiDetachedHouses);
+        census_filters.push(CensusFilter::TotalRowHouses);
+        census_filters.push(CensusFilter::TotalApartmentDuplex);
+        census_filters.push(CensusFilter::TotalApartmentBuildingLessThan5Stories);
+        census_filters.push(CensusFilter::TotalApartmentBuilding5StoriesOrMore);
+        census_filters.push(CensusFilter::TotalOtherDwellings);
+        census_filters.push(CensusFilter::TotalMovableDwellings);
+        census_filters.push(CensusFilter::AverageAfterTaxIncome);
+        census_filters.push(CensusFilter::MedianTotalIncomeEconomicFamily);
+        census_filters.push(CensusFilter::AverageTotalIncomeEconomicFamily);
+        census_filters.push(CensusFilter::AverageAfterTaxIncomeOneParent);
+        census_filters.push(CensusFilter::MedianTotalIncomeOneParent);
+        census_filters.push(CensusFilter::TotalCensusFamiliesPrivateHouseHolds);
+        census_filters.push(CensusFilter::MarriedWithChildren);
+        census_filters.push(CensusFilter::CommonLawWithChildren);
+        census_filters.push(CensusFilter::OneParentFamilies);
+        census_filters.push(CensusFilter::AverageTotalChildrenPerFamily);
+        census_filters.push(CensusFilter::LowIncomeMeasureAfterTax);
+        census_filters.push(CensusFilter::GiniIndexOnAfterTaxIncome);
+        census_filters.push(CensusFilter::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter);
+        census_filters.push(CensusFilter::ImmigrantStatusImmigrant);
+        census_filters.push(CensusFilter::ImmigrantStatusNonImmigrant);
+
+    }
     if args.population.unwrap_or(false) {
         census_filters.push(CensusFilter::Population2021);
     }
@@ -88,6 +140,10 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
     if args.income.unwrap_or(false) {
         census_filters.push(CensusFilter::MedianAfterTaxIncome);
     }
+    if args.population.unwrap_or(false) {
+        census_filters.push(CensusFilter::Population2021);
+    }
+
 
     census_filters
 }
@@ -114,7 +170,7 @@ pub fn output_sample(input: String, output: String, take: usize, skip: usize) ->
 
 pub fn get_census_data(input: &String, output: &String, filter: usize) -> Option<Vec<Vec<String>>> {
     let tmp_vec = format!("{}{}", TEMP_DIRECTORY, output);
-    let output_vec = format!("{}/{}", OUTPUT_DIRECTORY, output);
+    //let output_vec = format!("{}/{}", OUTPUT_DIRECTORY, output);
     if !Path::new(&tmp_vec).exists() {
         let _ = get_and_cache_filtered_census(input, output, filter);
     }
@@ -129,7 +185,7 @@ fn get_and_cache_filtered_census(input: &String, output: &String, filter: usize)
         let vec = lines
             .flatten()
             .par_bridge()
-            .filter(|line| {       
+            .filter(|line| { 
                 let splitted = csv_util::split_csv_line(&line);
                 let is_census_subdivision = splitted[3] == "Dissemination area";
                 is_census_subdivision && splitted[8] == filter.to_string()
@@ -182,12 +238,13 @@ pub fn write_lines_temp(temp_vec: Vec<String>, filename: String) -> io::Result<(
     Ok(())
 }
 
+#[cfg(test)]
 mod test {
     use super::*;
-    const TEST_DIRECTORY: &str = "data/resources/test/";
     #[test]
     fn test_readlines() {
-        let result = read_lines(format!("{}test_readlines.txt", TEST_DIRECTORY ));
+        let test_directory = "data/resources/test/";
+        let result = read_lines(format!("{}test_readlines.txt", test_directory ));
         assert!(result.is_ok());
         let lines = result.unwrap();
         let mut count = 0;

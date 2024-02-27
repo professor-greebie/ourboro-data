@@ -1,10 +1,11 @@
 extern crate ourboro;
 use clap::Parser;
 use ourboro::util;
+use itertools::izip;
 
-static PCCF_TEMP_FILE: &str = "./data/scratch/pccf_temp.txt";
+//static PCCF_TEMP_FILE: &str = "./data/scratch/pccf_temp.txt";
 static CENSUS_DATA_FILE: &str = "98-401-X2021006_English_CSV_data_Ontario.csv";
-static OURBORO_DATA_FILE: &str = "homeowner_postal_code.csv";
+static OURBORO_DATA_FILE: &str = "homeowner_postal_code_stats.csv";
 static INPUT_DIRECTORY: &str = "./data/resources/quick";
 static OUTPUT_DIRECTORY: &str = "./data/resources/output";
 
@@ -23,28 +24,54 @@ fn main() {
     let filter_postal = args.postal.map(|filter : String| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
     let filter_province = args.province.map(|filter| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
 
-    let pccf_data = ourboro::util::io::read_pccf(filter_postal, filter_province);
+    
     //pccf_data.iter().for_each(|pc| println!("{:?}", pc.dguid));
     
     // Specific to the ourboro project
     if _ourboro {
 
+        // Create headers for the output file
+
+        let headers = _vector_of_filters.clone().iter().map(|filter| filter.cache_name()).collect::<Vec<String>>().join(", ");
+
         // Create headers for GroupA
+        let group_headers = format!("user_id, starting_postal_code, starting_dguid, {}, finishing_postal_code, finishing_dguid, {}", headers, headers).split(",").map(|x| x.to_string()).collect::<Vec<String>>();
+        //println!("{:?}", group_headers);
+        let mut final_res = Vec::new();
+        final_res.push(group_headers);
+        
         // Create headers for GroupB
 
         println!("Running ourboro specific code run");
-        let input = format!("{}/{}", INPUT_DIRECTORY, CENSUS_DATA_FILE);
-        let output = format!("{}/{}", OUTPUT_DIRECTORY, "output.csv");
+        let input = format!("{}/{}", INPUT_DIRECTORY, OURBORO_DATA_FILE);
+        let output = format!("{}/{}", OUTPUT_DIRECTORY, "ourboro_output.csv");
+        //println!("{:?}", input);
         let comparator_postal_codes: Vec<Vec<String>> = ourboro::util::io::read_and_clean_csv(&input);
-        let groupA = comparator_postal_codes.clone().into_iter().map(|x| x[1].clone()).collect::<Vec<String>>();
-        let groupB = comparator_postal_codes.clone().into_iter().map(|x| x[2].clone()).collect::<Vec<String>>();
+        let ids = comparator_postal_codes.clone().into_iter().map(|x| x[0].clone()).collect::<Vec<String>>();
+        let group_a = comparator_postal_codes.clone().into_iter().map(|x| x[1].clone()).collect::<Vec<String>>();
+        let group_b = comparator_postal_codes.clone().into_iter().map(|x| x[2].clone()).collect::<Vec<String>>();
+        let filtered_pccf_group_a = ourboro::util::io::read_pccf_filtered_postal_code_list(group_a);
+        let filtered_pccf_group_b = ourboro::util::io::read_pccf_filtered_postal_code_list(group_b);
 
-        for postal_code in comparator_postal_codes {
 
-            // Largely follows process outlined for the code block 2 down from here.
-            println!("{:?}", postal_code);
+        let result_a = ourboro::pccf::processing::process_pccf(&filtered_pccf_group_a, &_vector_of_filters, &input);
+        let result_b = ourboro::pccf::processing::process_pccf(&filtered_pccf_group_b, &_vector_of_filters, &input);
+        //resultA.iter().for_each(|line| println!("{:?}", line));
+        //resultB.iter().for_each(|line| println!("{:?}", line));
+
+        let final_result = izip!(ids.iter(), result_a.iter().skip(1), result_b.iter().skip(1)).map(|(a, b, c)| { 
+            let combined = format!("{}, {}, {}", a, b.join(", "), c.join(", ")); 
+            combined.split(",").map(|x| x.to_string()).collect::<Vec<String>>()
+        }).collect::<Vec<Vec<String>>>();
+        for line in final_res.iter() {
+            println!("{:?}", line);
+        }
+        final_res.extend(final_result);
+        for line in final_res.iter() {
+            println!("{:?}", line);
         }
 
+        let _ = util::csv_util::write_csv(&output, final_res);
     }
 
     // Output some census data to review information
@@ -58,7 +85,8 @@ fn main() {
 
 
 
-    if !_vector_of_filters.is_empty() {
+    if !_vector_of_filters.is_empty() && !_ourboro {
+        let pccf_data = ourboro::util::io::read_pccf(filter_postal, filter_province);
 
         println!("Attempting to create filter");
 
@@ -68,12 +96,12 @@ fn main() {
         result.push(header);
         
         for postal_code in pccf_data {
-            let mut line = postal_code.postal_code.clone() + ", " + &postal_code.dguid;
+            let mut line = postal_code._postal_code.clone() + ", " + &postal_code._dguid;
             for filter in _vector_of_filters.clone() {
                 let input = format!("{}/{}", INPUT_DIRECTORY, CENSUS_DATA_FILE);
                 let output = filter.cache_name();
                 let dataset: Option<Vec<Vec<String>>> = util::io::get_census_data(&input, &output, filter.filter_column())
-                  .map(|option| option.into_iter().filter(|filter| filter[3] == postal_code.dguid).collect());
+                  .map(|option| option.into_iter().filter(|filter| filter[3] == postal_code._dguid).collect());
                 let value = dataset.unwrap().iter().map(|filter| filter[4].clone()).collect::<Vec<String>>().join(", ");
                 line = line + ", " + &value;
             }

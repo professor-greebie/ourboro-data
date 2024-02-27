@@ -9,6 +9,8 @@ pub struct Cli {
         #[clap(long)]
         pub income: Option<bool>,
         #[clap(long)]
+        pub all: Option<bool>,
+        #[clap(long)]
         pub sample: Option<bool>,
         /// Collect population data from census
         #[clap(long)]

@@ -1,5 +1,4 @@
 use calamine::{open_workbook, DataType, Reader, Xlsx};
-use csv::Writer;
 
 
 pub fn xlsx_to_csv(path: &str) {
@@ -69,6 +68,7 @@ pub fn split_csv_line(line: &str) -> Vec<String> {
     result
 }
 
+#[cfg(test)]
 mod test {
     use super::*;
     #[test]
@@ -81,6 +81,7 @@ mod test {
         assert_eq!(result[2], "C");
     }
 
+    #[test]
     fn test_head() {
         let lines: Vec<(String, String)> = vec![("A".to_string(), "A".to_string()), 
           ("B".to_string(), "B".to_string()), ("C".to_string(), "C".to_string())];
