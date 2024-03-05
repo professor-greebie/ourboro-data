@@ -10,7 +10,7 @@ pub fn process_pccf(codes: &Vec<PostalCode>, filters: &Vec<CensusFilter>, input:
     let header = format!("postal_code, dguid, {}", headers).split(",").map(|x| x.to_string()).collect();
     result.push(header);
     for postal_code in codes {
-        let mut line = postal_code._postal_code.clone() + ", " + &postal_code._dguid;
+        let mut line = postal_code._postal_code.clone() + ", " + &postal_code._dguid + ", " + &postal_code._point_latitude + ", " + &postal_code._point_longitude;
         for filter in filters.clone() {
             let output = filter.cache_name();
             let dataset: Option<Vec<Vec<String>>> = io::get_census_data(&input, &output, filter.filter_column())

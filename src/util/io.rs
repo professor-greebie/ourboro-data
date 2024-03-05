@@ -96,6 +96,7 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
     let mut census_filters: Vec<CensusFilter> = Vec::new();
     if args.all.unwrap_or(false) {
         census_filters.push(CensusFilter::Population2021);
+        census_filters.push(CensusFilter::Population2016);
         census_filters.push(CensusFilter::LandArea);
         census_filters.push(CensusFilter::TotalOccupiedDwellings);
         census_filters.push(CensusFilter::TotalSingleDetachedHouses);

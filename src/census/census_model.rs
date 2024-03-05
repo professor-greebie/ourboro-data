@@ -34,6 +34,22 @@ pub enum CensusFilter {
     HouseholdsSpending30PercentOrMoreOfIncomeOnShelter,
     ImmigrantStatusImmigrant,
     ImmigrantStatusNonImmigrant,
+    IndigenousIdentityIndigenous,
+    IndigenousIdentityNonIndigenous,
+    PrivateHouseholdsByTenureOwner,
+    PrivateHouseholdsByTenureRenter,
+    PrivateHouseholdsByTenureBandH,
+    MobilityStatusMovers,
+    MobilityStatusNonMovers,
+    HighestCertificateNone,
+    HighestCertificateHighSchool,
+    HighestCertificateCollege,
+    HighestCertificateUniversityBachelorOrHigher,
+    HighestCertificateUniversityBachelor,
+    HighestCertificateUniversityAboveBachelor,
+    ParticipationRate,
+    EmploymentRate,
+    UnemploymentRate,
     UnknownFilter
 }
 
@@ -80,6 +96,28 @@ impl CensusFilter {
             }
             Self::ImmigrantStatusImmigrant => "immigrant_status_immigrant".to_string(),
             Self::ImmigrantStatusNonImmigrant => "immigrant_status_non_immigrant".to_string(),
+            Self::IndigenousIdentityIndigenous => "identity_indigenous".to_string(),
+            Self::IndigenousIdentityNonIndigenous => "identity_non_indigenous".to_string(),
+            Self::PrivateHouseholdsByTenureOwner => "private_households_by_tenure_owner".to_string(),
+            Self::PrivateHouseholdsByTenureRenter => "private_households_by_tenure_renter".to_string(),
+            Self::PrivateHouseholdsByTenureBandH => "private_households_by_tenure_band_h".to_string(),
+            Self::MobilityStatusMovers => "mobility_status_movers".to_string(),
+            Self::MobilityStatusNonMovers => "mobility_status_non_movers".to_string(),
+            Self::HighestCertificateNone => "highest_certificate_none".to_string(),
+            Self::HighestCertificateHighSchool => "high_school".to_string(),
+            Self::HighestCertificateCollege => "college".to_string(),
+            Self::HighestCertificateUniversityBachelorOrHigher => {
+                "university_bachelor_or_higher".to_string()
+            }
+            Self::HighestCertificateUniversityBachelor => "university_bachelor".to_string(),
+            Self::HighestCertificateUniversityAboveBachelor => {
+                "university_above_bachelor".to_string()
+            }
+            Self::ParticipationRate => "participation_rate".to_string(),
+            Self::EmploymentRate => "employment_rate".to_string(),
+            Self::UnemploymentRate => "unemployment_rate".to_string(),
+
+
             Self::UnknownFilter => "unknown_filter".to_string(),
 
 
@@ -147,6 +185,22 @@ impl CensusFilter {
             }
             Self::ImmigrantStatusImmigrant => "Immigrants".to_string(),
             Self::ImmigrantStatusNonImmigrant => "Non-immigrants".to_string(),
+            Self::IndigenousIdentityIndigenous => "Total - Indigenous identity for the population in private households - 25% sample data".to_string(),
+            Self::IndigenousIdentityNonIndigenous => "Total - Non-Indigenous identity for the population in private households - 25% sample data".to_string(),
+            Self::PrivateHouseholdsByTenureOwner => "Owner".to_string(),
+            Self::PrivateHouseholdsByTenureRenter => "Renter".to_string(),
+            Self::PrivateHouseholdsByTenureBandH => "Band housing".to_string(),
+            Self::MobilityStatusMovers => "Movers".to_string(),
+            Self::MobilityStatusNonMovers => "Non-movers".to_string(),
+            Self::HighestCertificateNone => "No certificate, diploma or degree".to_string(),
+            Self::HighestCertificateHighSchool => "Secondary (high) school diploma or equivalency certificate".to_string(),
+            Self::HighestCertificateCollege => "College, CEGEP or other non-university certificate or diploma".to_string(),
+            Self::HighestCertificateUniversityBachelorOrHigher => "University certificate, diploma or degree at bachelor level or above".to_string(),
+            Self::HighestCertificateUniversityBachelor => "University certificate, diploma or degree at bachelor level".to_string(),
+            Self::HighestCertificateUniversityAboveBachelor => "University certificate, diploma or degree above bachelor level".to_string(),
+            Self::ParticipationRate => "Participation rate".to_string(),
+            Self::EmploymentRate => "Employment rate".to_string(),
+            Self::UnemploymentRate => "Unemployment rate".to_string(),
             Self::UnknownFilter => "Unknown Filter".to_string(),
         }
     }
@@ -180,6 +234,22 @@ impl CensusFilter {
             Self::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter => 1467,
             Self::ImmigrantStatusImmigrant => 1529,
             Self::ImmigrantStatusNonImmigrant => 1528,
+            Self::IndigenousIdentityIndigenous => 1403,
+            Self::IndigenousIdentityNonIndigenous => 1410,
+            Self::PrivateHouseholdsByTenureOwner => 1415,
+            Self::PrivateHouseholdsByTenureRenter => 1416,
+            Self::PrivateHouseholdsByTenureBandH => 1417,
+            Self::MobilityStatusMovers => 1976,
+            Self::MobilityStatusNonMovers => 1975,
+            Self::HighestCertificateNone => 1999,
+            Self::HighestCertificateHighSchool => 2000,
+            Self::HighestCertificateCollege => 2002,
+            Self::HighestCertificateUniversityBachelorOrHigher => 2008,
+            Self::HighestCertificateUniversityBachelor => 2009,
+            Self::HighestCertificateUniversityAboveBachelor => 2010,
+            Self::ParticipationRate => 2228,
+            Self::EmploymentRate => 2229,
+            Self::UnemploymentRate => 2230,
             Self::UnknownFilter => 0,
         }
     }

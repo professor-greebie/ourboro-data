@@ -32,10 +32,11 @@ fn main() {
 
         // Create headers for the output file
 
-        let headers = _vector_of_filters.clone().iter().map(|filter| filter.cache_name()).collect::<Vec<String>>().join(", ");
+        let headers = _vector_of_filters.clone().iter().map(|filter| filter.cache_name()).collect::<Vec<String>>();
+        let finishing_headers = headers.clone().iter().map(|x| "finishing_".to_string() + x).collect::<Vec<String>>();
 
         // Create headers for GroupA
-        let group_headers = format!("user_id, starting_postal_code, starting_dguid, {}, finishing_postal_code, finishing_dguid, {}", headers, headers).split(",").map(|x| x.to_string()).collect::<Vec<String>>();
+        let group_headers = format!("user_id, starting_postal_code, starting_dguid, starting_lat, starting_lon, {}, finishing_postal_code, finishing_dguid, finishing_lat, finishing_starting_lon, {}", headers.join(", "), finishing_headers.join(", ")).split(",").map(|x| x.to_string()).collect::<Vec<String>>();
         //println!("{:?}", group_headers);
         let mut final_res = Vec::new();
         final_res.push(group_headers);
@@ -80,7 +81,7 @@ fn main() {
         let output_file = "sample_file.csv";
         let input = format!("{}/{}", INPUT_DIRECTORY, CENSUS_DATA_FILE);
         let output = format!("{}/{}", OUTPUT_DIRECTORY, output_file);
-        let _ = util::io::output_sample(input, output, take, skip);
+        let _ = util::io::output_sample(input, output_file.to_string(), take, skip);
     }
 
 

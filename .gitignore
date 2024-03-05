@@ -2,3 +2,5 @@
 /data/scratch/*
 /data/resources/quick/*
 /data/resources/output/*
+/data/resources/scratch/*
+/data/resources/tmp/*
