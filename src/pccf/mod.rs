@@ -1,4 +1,4 @@
-mod postal_code;
+pub mod postal_code;
 pub mod processing;
 
 pub use postal_code::PostalCode;  

@@ -15,6 +15,8 @@ pub struct Cli {
         /// Collect population data from census
         #[clap(long)]
         pub population: Option<bool>,
+        #[clap(long)]
+        pub population_2016: Option<bool>,
         /// Collect land area data from census
         #[clap(long)]
         pub land_area: Option<bool>,
@@ -31,6 +33,9 @@ pub struct Cli {
         /// Show verbose output
         #[clap(short, long)]
         pub verbose: Option<bool>,
+        #[clap(short, long)]
+        /// Optional location of the output file, otherwise will default to the current directory
+        pub input: Option<String>,
         
         #[clap(short, long)]
         /// Optional location of the output file, otherwise will default to the current directory

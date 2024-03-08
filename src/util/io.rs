@@ -18,14 +18,14 @@ pub fn read_and_clean_csv(path: &str) -> Vec<Vec<String>> {
     let mut result = VecDeque::new();
     if let Ok(lines) = read_lines(path) {
         for line in lines.flatten() {
-            let cleaned: Vec<String> = csv_util::split_csv_line(&line).into_iter().map(|s| s.to_string().replace(" ", "")).collect();
+            let cleaned: Vec<String> = csv_util::split_csv_line(&line).into_iter().map(|s| s.to_string().replace(" ", "").replace("-", ""))
+              .map(|sx| if sx != "" {sx} else {"NA".to_string()}).collect();
             result.push_back(cleaned);
         }
     }
     result.pop_front();
     Vec::from(result)
 }
-
 
 pub fn read_pccf(postal_filter : Option<String>, province_filter : Option<String>) -> Vec<PostalCode> {
     let mut temp_vec: Vec<PostalCode> = Vec::new();
@@ -44,9 +44,10 @@ pub fn read_pccf(postal_filter : Option<String>, province_filter : Option<String
         }
     }
     temp_vec
-
 }
 
+/// TODO: How does this function collect the filtered postal codes?
+/// 
 pub fn read_pccf_filtered_postal_code_list(postal_filters: Vec<String>) -> Vec<PostalCode> {
     let mut temp_vec: Vec<PostalCode> = Vec::new();
     if Path::new(PCCF_TEMP_FILE).exists() {
@@ -72,13 +73,16 @@ pub fn read_pccf_filtered_postal_code_list(postal_filters: Vec<String>) -> Vec<P
 /// * `args` - The command line arguments
 /// # Example
 /// ```rust
-/// use ourboro_data::util::cli::Cli;
-/// use ourboro_data::util::io::get_user_defined_sources;
+/// use crate::ourboro::util::cli::Cli;
+/// use crate::ourboro::util::io::get_user_defined_sources;
 /// let args = Cli {
 ///    pccf: Some("test".to_string()),
+///   all: None,
+/// ourboro: None,
 ///   income: Some(true),
 ///  sample: Some(true),
 /// population: Some(true),
+/// population_2016: None,
 /// land_area: Some(true),
 /// total_occupied_dwellings: Some(true),
 /// total_single_detached_houses: Some(true),
@@ -87,9 +91,12 @@ pub fn read_pccf_filtered_postal_code_list(postal_filters: Vec<String>) -> Vec<P
 /// verbose: Some(true),
 /// output: Some("test".to_string()),
 /// xlsx: Some("test".to_string()),
+/// input: None,
+/// postal: None,
+/// province: None,
 /// };
 /// let result = get_user_defined_sources(&args);
-/// assert_eq!(result.len(), 4); 
+/// assert_eq!(result.len(), 6); 
 /// 
 
 pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
@@ -124,10 +131,32 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
         census_filters.push(CensusFilter::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter);
         census_filters.push(CensusFilter::ImmigrantStatusImmigrant);
         census_filters.push(CensusFilter::ImmigrantStatusNonImmigrant);
+        census_filters.push(CensusFilter::IndigenousIdentityIndigenous);
+        census_filters.push(CensusFilter::IndigenousIdentityNonIndigenous);
+        census_filters.push(CensusFilter::PrivateHouseholdsByTenureOwner);
+        census_filters.push(CensusFilter::PrivateHouseholdsByTenureRenter);
+        census_filters.push(CensusFilter::PrivateHouseholdsByTenureBandH);
+        census_filters.push(CensusFilter::MobilityStatusMovers);
+        census_filters.push(CensusFilter::MobilityStatusNonMovers);
+        census_filters.push(CensusFilter::HighestCertificateNone);
+        census_filters.push(CensusFilter::HighestCertificateHighSchool);
+        census_filters.push(CensusFilter::HighestCertificateCollege);
+        census_filters.push(CensusFilter::HighestCertificateUniversityBachelorOrHigher);
+        census_filters.push(CensusFilter::HighestCertificateUniversityBachelor);
+        census_filters.push(CensusFilter::HighestCertificateUniversityAboveBachelor);
+        census_filters.push(CensusFilter::ParticipationRate);
+        census_filters.push(CensusFilter::EmploymentRate);
+        census_filters.push(CensusFilter::UnemploymentRate);
+
+
+        
 
     }
     if args.population.unwrap_or(false) {
         census_filters.push(CensusFilter::Population2021);
+    }
+    if args.population_2016.unwrap_or(false) {
+        census_filters.push(CensusFilter::Population2016);
     }
     if args.land_area.unwrap_or(false) {
         census_filters.push(CensusFilter::LandArea);
@@ -155,10 +184,6 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
 /// * `filename` - The name of the file to sample
 /// * `take` - The number of lines to take from the file
 /// * `skip` - The number of lines to skip from the file
-/// # Example
-/// ```
-/// use ourboro_data::util::io::output_sample;
-/// let _ = output_sample(test_case("test_readlines.txt").to_string(), 2, 0);
 /// ```
 pub fn output_sample(input: String, output: String, take: usize, skip: usize) -> io::Result<()> {
     if let Ok(lines) = read_lines(input.clone()) {
@@ -179,7 +204,23 @@ pub fn get_census_data(input: &String, output: &String, filter: usize) -> Option
     result
 }
 
-
+/// Get the data from the census file and cache it in the temp directory
+/// 
+/// # Arguments
+/// * `input` - The name of the file to read from
+/// * `output` - The name of the file to write to
+/// * `filter` - The id of the census item to filter by
+/// 
+/// # Example
+/// ```rust
+/// use crate::ourboro::util::io::get_and_cache_filtered_census;
+/// let input = "data/resources/quick/98-401-X2021032_English_CSV_data.csv".to_string();
+/// let output = "test".to_string();
+/// let filter = 1;
+/// get_and_cache_filtered_census(&input, &output, filter);
+/// 
+/// ```
+/// 
 fn get_and_cache_filtered_census(input: &String, output: &String, filter: usize) {
     let tmp_vec = format!("{}{}", TEMP_DIRECTORY, output);
     if let Ok(lines) = read_lines(input) {
@@ -195,6 +236,7 @@ fn get_and_cache_filtered_census(input: &String, output: &String, filter: usize)
                 let splitted = csv_util::split_csv_line(&ln);
                 let mut location = format!("{}", splitted[4]).to_string();
                 location.retain(|c| ![','].contains(&c));
+                //println!("Location: {}, Splitted11: {}, all splitted{}", location, splitted[11], splitted.join(","));
                 let vector =  vec![splitted[1].to_string(), splitted[3].to_string(), splitted[8].to_string(), location, splitted[11].to_string()].join(",");
                 vector
             })
@@ -255,4 +297,23 @@ mod test {
         }
         assert_eq!(count, 3);
     }
+
+    #[test]
+    fn test_clean_csv() {
+        let test_directory = "data/resources/test/";
+        let result = read_and_clean_csv(format!("{}dirty_csv.csv", test_directory).as_str());
+        for line in &result {
+            for item in line {
+                println!("{}", item);
+            }
+        }
+        assert!(!result.is_empty());
+        assert_eq!(result.len(), 4);
+        assert_eq!(result[0][1], "N2N3B3");
+        assert_eq!(result[0][2], "X7X8C8");
+        assert_eq!(result[1][1], "N2N3B3");
+        assert_eq!(result[1][2], "X7X8C8");
+        assert_eq!(result[2][1], "NA");
+        assert_eq!(result[3][2], "NA");
+    } 
 }

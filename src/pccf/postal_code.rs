@@ -31,6 +31,7 @@ const QUALITY_INDICATOR_END: usize = 215;
 const SOURCE_GEO_END: usize = 216;
 const POPULATION_CENTRE_AND_RURAL_AREA_INDICATOR_END: usize = 217;
 
+#[derive(Clone, Debug)]
 pub struct PostalCode {
     pub _postal_code: String,
     _forward_sortation_area: String,
@@ -69,6 +70,44 @@ pub struct PostalCode {
 }
 
 impl PostalCode {
+    pub fn empty() -> Self {
+        Self {
+            _postal_code: "NA".to_string(),
+            _forward_sortation_area: "".to_string(),
+            _province: "".to_string(),
+            _province_iso3166_2: "".to_string(),
+            _census_division_id: "".to_string(),
+            _census_subdivision_id: "".to_string(),
+            _census_subdivision_name: "".to_string(),
+            _census_subdivision_type: "".to_string(),
+            _census_subdivision_code: "".to_string(),
+            _statistical_area_class: "".to_string(),
+            _statistical_area_type: "".to_string(),
+            _census_tract_name: "".to_string(),
+            _economic_region_code: "".to_string(),
+            _designated_place_code: "".to_string(),
+            _federal_electoral_district_code: "".to_string(),
+            _population_center_ra: "".to_string(),
+            _population_center_ra_type: "".to_string(),
+            _dissemation_area_id: "".to_string(),
+            _dissemation_block_code: "".to_string(),
+            _representative_point_type: "".to_string(),
+            _point_latitude: "".to_string(),
+            _point_longitude: "".to_string(),
+            _single_link_indicator: "".to_string(),
+            _pc_type: "".to_string(),
+            _community_name: "".to_string(),
+            _delivery_mode: "".to_string(),
+            _historic_delivery_mode: "".to_string(),
+            _birth_date: "".to_string(),
+            _retired_date: "".to_string(),
+            _delivery_installation: "".to_string(),
+            _quality_indicator: "".to_string(),
+            _source_geo: "".to_string(),
+            _population_centre_and_rural_area_indicator: "".to_string(),
+            _dguid: "".to_string(),
+        }
+    }
     pub fn from(line: &String) -> Self {
         let province = line[FORWARD_SORTATION_AREA_END..PROVINCE_END].to_string();
         let census_subdivision_id = line[CENSUS_DIVISION_ID_END..CENSUS_SUBDIVISION_ID_END].to_string();
@@ -353,7 +392,7 @@ mod tests {
             population_centre_and_rural_area_indicator_expected,
             population_centre_and_rural_area_indicator_actual
         );
-        let dguid_expected = "FSA24CDUI_CSDUI_";
+        let dguid_expected = "_DAuid__";
         let dguid_actual = postal_code_struct._dguid;
         assert_eq!(dguid_expected, dguid_actual);
     }

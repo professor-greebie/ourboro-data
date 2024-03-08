@@ -1,26 +1,27 @@
 use calamine::{open_workbook, DataType, Reader, Xlsx};
 
-
-pub fn xlsx_to_csv(path: &str) {
-    let lines = read_xlsx(path);
+pub fn xlsx_to_csv(path: &str, keep: Vec<usize>) {
+    let lines = read_xlsx(path, keep);
     //println!("{:?}", lines);
     let csv_path = path.to_string();
     let _ = csv_path.replace(".xlsx", ".csv");
+    println!("Writing file: {}", csv_path);
     write_csv(&csv_path, lines);
 }
 
-fn read_xlsx(path: &str) -> Vec<Vec<String>> {
+fn read_xlsx(path: &str, keep: Vec<usize>) -> Vec<Vec<String>> {
     let mut result = Vec::new();
     println!("Reading file: {}", path);
     let mut workbook: Xlsx<_> = open_workbook(path).unwrap();
     for sheet in workbook.sheet_names().to_owned() {
-        println!("Reading sheet: {}", sheet);
+        //println!("Reading sheet: {}", sheet);
         if let Ok(r) = workbook.worksheet_range(&sheet) {
-        println!("Reading sheet 1");
+    
+        //println!("Reading sheet 1");
         for row in r.rows() {
             let mut row_result = Vec::new();
             for (_i, c) in row.iter().enumerate() {
-                println!("{:?}", c);
+                //println!("{:?}", c);
                 match c {
                     DataType::String(s) => row_result.push(s.to_string()),
                     DataType::Float(f) => row_result.push(f.to_string()),
@@ -28,13 +29,14 @@ fn read_xlsx(path: &str) -> Vec<Vec<String>> {
                     _ => row_result.push("".to_string()),
                 }
             }
-            result.push(row_result);
+            result.push(row_result.iter().enumerate().filter(|(i, _)| keep.contains(i)).map(|(_, v)| v.clone()).collect());
         }
     }}
     result
 }
 
 pub fn write_csv(path: &str, lines: Vec<Vec<String>>) {
+    println!("Writing file: {}", path);
     let mut wtr = csv::Writer::from_path(path).unwrap();
     for line in lines {
         wtr.write_record(line).unwrap();
