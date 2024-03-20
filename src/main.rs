@@ -120,9 +120,10 @@ fn main() {
 
 
     if !_vector_of_filters.is_empty() && !_ourboro {
+        println!("Attempting to create filter");
         let pccf_data = ourboro::util::io::read_pccf(filter_postal, filter_province);
 
-        println!("Attempting to create filter");
+        
 
         let mut result = Vec::new(); 
         let headers = _vector_of_filters.clone().iter().map(|filter| filter.cache_name()).collect::<Vec<String>>().join(", ");

@@ -107,8 +107,6 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
         census_filters.push(CensusFilter::LandArea);
         census_filters.push(CensusFilter::TotalOccupiedDwellings);
         census_filters.push(CensusFilter::TotalSingleDetachedHouses);
-        census_filters.push(CensusFilter::MedianAfterTaxIncome);
-        census_filters.push(CensusFilter::Population2016);
         census_filters.push(CensusFilter::TotalSemiDetachedHouses);
         census_filters.push(CensusFilter::TotalRowHouses);
         census_filters.push(CensusFilter::TotalApartmentDuplex);
@@ -116,6 +114,7 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
         census_filters.push(CensusFilter::TotalApartmentBuilding5StoriesOrMore);
         census_filters.push(CensusFilter::TotalOtherDwellings);
         census_filters.push(CensusFilter::TotalMovableDwellings);
+        census_filters.push(CensusFilter::MedianAfterTaxIncome);
         census_filters.push(CensusFilter::AverageAfterTaxIncome);
         census_filters.push(CensusFilter::MedianTotalIncomeEconomicFamily);
         census_filters.push(CensusFilter::AverageTotalIncomeEconomicFamily);
@@ -126,16 +125,31 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
         census_filters.push(CensusFilter::CommonLawWithChildren);
         census_filters.push(CensusFilter::OneParentFamilies);
         census_filters.push(CensusFilter::AverageTotalChildrenPerFamily);
-        census_filters.push(CensusFilter::LowIncomeMeasureAfterTax);
+        census_filters.push(CensusFilter::LowIncomeMeasureAfterTaxLIMAT);
+        census_filters.push(CensusFilter::PrevalanceOfLowIncomeLIMAT);
+        census_filters.push(CensusFilter::PrevalanceOfLowIncomeLICOAT);
+        census_filters.push(CensusFilter::GiniIndexOnTotalIncome);
+        census_filters.push(CensusFilter::GiniIndexOnMarketIncome);
         census_filters.push(CensusFilter::GiniIndexOnAfterTaxIncome);
+        census_filters.push(CensusFilter::P90P10Ratio);
         census_filters.push(CensusFilter::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter);
+        census_filters.push(CensusFilter::ImmigrantStatusTotal);
         census_filters.push(CensusFilter::ImmigrantStatusImmigrant);
         census_filters.push(CensusFilter::ImmigrantStatusNonImmigrant);
+        census_filters.push(CensusFilter::ImmigrantStatusNonPermanentResident);
         census_filters.push(CensusFilter::IndigenousIdentityIndigenous);
         census_filters.push(CensusFilter::IndigenousIdentityNonIndigenous);
+        census_filters.push(CensusFilter::PrivateHouseholdsByTenureTotal);
         census_filters.push(CensusFilter::PrivateHouseholdsByTenureOwner);
         census_filters.push(CensusFilter::PrivateHouseholdsByTenureRenter);
         census_filters.push(CensusFilter::PrivateHouseholdsByTenureBandH);
+        census_filters.push(CensusFilter::DwellingConditionTotal);
+        census_filters.push(CensusFilter::DwellingConditionRegularMaintenance);
+        census_filters.push(CensusFilter::DwellingConditionMajorRepairs);
+        census_filters.push(CensusFilter::HousingSuitabilityTotal);
+        census_filters.push(CensusFilter::HousingSuitabilitySuitable);
+        census_filters.push(CensusFilter::HousingSuitabilityNotSuitable);
+        census_filters.push(CensusFilter::MobilityStatusTotal);
         census_filters.push(CensusFilter::MobilityStatusMovers);
         census_filters.push(CensusFilter::MobilityStatusNonMovers);
         census_filters.push(CensusFilter::HighestCertificateNone);
@@ -146,6 +160,11 @@ pub fn get_user_defined_sources(args : &Cli) -> Vec<CensusFilter> {
         census_filters.push(CensusFilter::HighestCertificateUniversityAboveBachelor);
         census_filters.push(CensusFilter::ParticipationRate);
         census_filters.push(CensusFilter::EmploymentRate);
+        census_filters.push(CensusFilter::CommutingEmployedLaborForceLessThan15);
+        census_filters.push(CensusFilter::CommutingEmployedLaborForce15To29);
+        census_filters.push(CensusFilter::CommutingEmployedLaborForce30To44);
+        census_filters.push(CensusFilter::CommutingEmployedLaborForce45To59);
+        census_filters.push(CensusFilter::CommutingEmployedLaborForceMoreThan60);
         census_filters.push(CensusFilter::UnemploymentRate);
 
 

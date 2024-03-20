@@ -29,16 +29,31 @@ pub enum CensusFilter {
     CommonLawWithChildren,
     OneParentFamilies,
     AverageTotalChildrenPerFamily,
-    LowIncomeMeasureAfterTax,
+    LowIncomeMeasureAfterTaxLIMAT,
+    PrevalanceOfLowIncomeLIMAT,
+    PrevalanceOfLowIncomeLICOAT,
+    GiniIndexOnTotalIncome,
+    GiniIndexOnMarketIncome,
     GiniIndexOnAfterTaxIncome,
+    P90P10Ratio,
     HouseholdsSpending30PercentOrMoreOfIncomeOnShelter,
+    ImmigrantStatusTotal,
     ImmigrantStatusImmigrant,
     ImmigrantStatusNonImmigrant,
+    ImmigrantStatusNonPermanentResident,
     IndigenousIdentityIndigenous,
     IndigenousIdentityNonIndigenous,
+    PrivateHouseholdsByTenureTotal,
     PrivateHouseholdsByTenureOwner,
     PrivateHouseholdsByTenureRenter,
     PrivateHouseholdsByTenureBandH,
+    DwellingConditionTotal,
+    DwellingConditionRegularMaintenance,
+    DwellingConditionMajorRepairs,
+    HousingSuitabilityTotal,
+    HousingSuitabilitySuitable,
+    HousingSuitabilityNotSuitable,
+    MobilityStatusTotal,
     MobilityStatusMovers,
     MobilityStatusNonMovers,
     HighestCertificateNone,
@@ -50,6 +65,12 @@ pub enum CensusFilter {
     ParticipationRate,
     EmploymentRate,
     UnemploymentRate,
+    CommutingEmployedLaborForceTotal,
+    CommutingEmployedLaborForceLessThan15,
+    CommutingEmployedLaborForce15To29,
+    CommutingEmployedLaborForce30To44,
+    CommutingEmployedLaborForce45To59,
+    CommutingEmployedLaborForceMoreThan60,
     UnknownFilter
 }
 
@@ -86,21 +107,37 @@ impl CensusFilter {
                 "total_census_families_private_house_holds".to_string()
             }
             Self::MarriedWithChildren => "married_with_children".to_string(),
+        
             Self::CommonLawWithChildren => "common_law_with_children".to_string(),
             Self::OneParentFamilies => "one_parent_families".to_string(),
             Self::AverageTotalChildrenPerFamily => "average_total_children_per_family".to_string(),
-            Self::LowIncomeMeasureAfterTax => "low_income_measure_after_tax".to_string(),
+            Self::LowIncomeMeasureAfterTaxLIMAT => "low_income_measure_after_tax_LIMAT".to_string(),
+            Self::PrevalanceOfLowIncomeLIMAT => "prevalance_of_low_income_LIMAT".to_string(),
+            Self::PrevalanceOfLowIncomeLICOAT => "prevalance_of_low_income_LICOAT".to_string(),
+            Self::GiniIndexOnTotalIncome => "gini_index_on_total_income".to_string(),
+            Self::GiniIndexOnMarketIncome => "gini_index_on_market_income".to_string(),
             Self::GiniIndexOnAfterTaxIncome => "gini_index_on_after_tax_income".to_string(),
+            Self::P90P10Ratio => "P90P10_ratio".to_string(),
             Self::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter => {
                 "households_spending_30_percent_or_more_of_income_on_shelter".to_string()
             }
+            Self::ImmigrantStatusTotal => "immigrant_status_total".to_string(),
             Self::ImmigrantStatusImmigrant => "immigrant_status_immigrant".to_string(),
             Self::ImmigrantStatusNonImmigrant => "immigrant_status_non_immigrant".to_string(),
+            Self::ImmigrantStatusNonPermanentResident => "immigrant_status_non_permanent_resident".to_string(),
             Self::IndigenousIdentityIndigenous => "identity_indigenous".to_string(),
             Self::IndigenousIdentityNonIndigenous => "identity_non_indigenous".to_string(),
+            Self::PrivateHouseholdsByTenureTotal => "private_households_by_tenure_total".to_string(),
             Self::PrivateHouseholdsByTenureOwner => "private_households_by_tenure_owner".to_string(),
             Self::PrivateHouseholdsByTenureRenter => "private_households_by_tenure_renter".to_string(),
             Self::PrivateHouseholdsByTenureBandH => "private_households_by_tenure_band_h".to_string(),
+            Self::DwellingConditionTotal => "dwelling_condition_total".to_string(),
+            Self::DwellingConditionRegularMaintenance => "dwelling_condition_regular_maintenance".to_string(),
+            Self::DwellingConditionMajorRepairs => "dwelling_condition_major_repairs".to_string(),
+            Self::HousingSuitabilityTotal => "housing_suitability_total".to_string(),
+            Self::HousingSuitabilitySuitable => "housing_suitability_suitable".to_string(),
+            Self::HousingSuitabilityNotSuitable => "housing_suitability_not_suitable".to_string(),
+            Self::MobilityStatusTotal => "mobility_status_total".to_string(),
             Self::MobilityStatusMovers => "mobility_status_movers".to_string(),
             Self::MobilityStatusNonMovers => "mobility_status_non_movers".to_string(),
             Self::HighestCertificateNone => "highest_certificate_none".to_string(),
@@ -116,94 +153,28 @@ impl CensusFilter {
             Self::ParticipationRate => "participation_rate".to_string(),
             Self::EmploymentRate => "employment_rate".to_string(),
             Self::UnemploymentRate => "unemployment_rate".to_string(),
-
-
+            Self::CommutingEmployedLaborForceTotal => "commuting_employed_labor_force_total".to_string(),
+            Self::CommutingEmployedLaborForceLessThan15 => {
+                "commuting_employed_labor_force_less_than_15".to_string()
+            }
+            Self::CommutingEmployedLaborForce15To29 => {
+                "commuting_employed_labor_force_15_to_29".to_string()
+            }
+            Self::CommutingEmployedLaborForce30To44 => {
+                "commuting_employed_labor_force_30_to_44".to_string()
+            }
+            Self::CommutingEmployedLaborForce45To59 => {
+                "commuting_employed_labor_force_45_to_59".to_string()
+            }
+            Self::CommutingEmployedLaborForceMoreThan60 => {
+                "commuting_employed_labor_force_more_than_60".to_string()
+            }
             Self::UnknownFilter => "unknown_filter".to_string(),
 
 
         }
     }
 
-    pub fn filter_string(self) -> String {
-        match self {
-            Self::Population2021 => "Population, 2021".to_string(),
-            Self::Population2016 => "Population, 2016".to_string(),
-            Self::LandArea => "Land area in square kilometres".to_string(),
-            Self::TotalOccupiedDwellings => {
-                "Total - Occupied private dwellings by structural type of dwelling - 100% data"
-                    .to_string()
-            }
-            Self::TotalSingleDetachedHouses => "Single-detached house".to_string(),
-            Self::TotalSemiDetachedHouses => "Semi-detached house".to_string(),
-            Self::TotalRowHouses => "Row house".to_string(),
-            Self::TotalApartmentDuplex => "Apartment or flat in a duplex".to_string(),
-            Self::TotalApartmentBuildingLessThan5Stories => {
-                "Apartment in a building that has five or more storeys".to_string()
-            }
-            Self::TotalApartmentBuilding5StoriesOrMore => {
-                "Apartment in a building that has fewer than five storeys".to_string()
-            }
-            Self::TotalOtherDwellings => "Other dwelling".to_string(),
-            Self::TotalMovableDwellings => "Movable dwelling".to_string(),
-            Self::MedianAfterTaxIncome => {
-                "Median after-tax income of households in 2020 ($)".to_string()
-            }
-            Self::AverageAfterTaxIncome => {
-                "Average after-tax income of households in 2020 ($)".to_string()
-            }
-            Self::MedianTotalIncomeEconomicFamily => {
-                "Median total income of economic families in 2020 ($)".to_string()
-            }
-            Self::AverageTotalIncomeEconomicFamily => {
-                "Average total income of economic families in 2020 ($)".to_string()
-            }
-            Self::AverageAfterTaxIncomeOneParent => {
-                "Average after-tax income of one-parent families in 2015 ($)".to_string()
-            }
-            Self::MedianTotalIncomeOneParent => {
-                "Median total income of one-parent families in 2020 ($)".to_string()
-            }
-            Self::TotalCensusFamiliesPrivateHouseHolds => {
-                "Total - Census families in private households by family size - 100% data"
-                    .to_string()
-            }
-            Self::MarriedWithChildren => "With children".to_string(),
-            Self::CommonLawWithChildren => "With children".to_string(),
-            Self::OneParentFamilies => "One-parent census families".to_string(),
-            Self::AverageTotalChildrenPerFamily => {
-                "Average number of children at home per census family".to_string()
-            }
-            Self::LowIncomeMeasureAfterTax => {
-                "In low income based on the Low-income measure, after tax (LIM-AT)".to_string()
-            }
-            Self::GiniIndexOnAfterTaxIncome => {
-                "Gini coefficient of the after-tax income distribution of households in 2020"
-                    .to_string()
-            }
-            Self::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter => {
-                "Households spending 30% or more of its income on shelter costs".to_string()
-            }
-            Self::ImmigrantStatusImmigrant => "Immigrants".to_string(),
-            Self::ImmigrantStatusNonImmigrant => "Non-immigrants".to_string(),
-            Self::IndigenousIdentityIndigenous => "Total - Indigenous identity for the population in private households - 25% sample data".to_string(),
-            Self::IndigenousIdentityNonIndigenous => "Total - Non-Indigenous identity for the population in private households - 25% sample data".to_string(),
-            Self::PrivateHouseholdsByTenureOwner => "Owner".to_string(),
-            Self::PrivateHouseholdsByTenureRenter => "Renter".to_string(),
-            Self::PrivateHouseholdsByTenureBandH => "Band housing".to_string(),
-            Self::MobilityStatusMovers => "Movers".to_string(),
-            Self::MobilityStatusNonMovers => "Non-movers".to_string(),
-            Self::HighestCertificateNone => "No certificate, diploma or degree".to_string(),
-            Self::HighestCertificateHighSchool => "Secondary (high) school diploma or equivalency certificate".to_string(),
-            Self::HighestCertificateCollege => "College, CEGEP or other non-university certificate or diploma".to_string(),
-            Self::HighestCertificateUniversityBachelorOrHigher => "University certificate, diploma or degree at bachelor level or above".to_string(),
-            Self::HighestCertificateUniversityBachelor => "University certificate, diploma or degree at bachelor level".to_string(),
-            Self::HighestCertificateUniversityAboveBachelor => "University certificate, diploma or degree above bachelor level".to_string(),
-            Self::ParticipationRate => "Participation rate".to_string(),
-            Self::EmploymentRate => "Employment rate".to_string(),
-            Self::UnemploymentRate => "Unemployment rate".to_string(),
-            Self::UnknownFilter => "Unknown Filter".to_string(),
-        }
-    }
     pub fn filter_column(self) -> usize {
         match self {
             Self::Population2021 => 1,
@@ -229,16 +200,31 @@ impl CensusFilter {
             Self::CommonLawWithChildren => 84,
             Self::OneParentFamilies => 86,
             Self::AverageTotalChildrenPerFamily => 77,
-            Self::LowIncomeMeasureAfterTax => 340,
+            Self::LowIncomeMeasureAfterTaxLIMAT => 340,
+            Self::PrevalanceOfLowIncomeLIMAT => 345,
+            Self::PrevalanceOfLowIncomeLICOAT => 360,
+            Self::GiniIndexOnTotalIncome => 379,
+            Self::GiniIndexOnMarketIncome => 380,
             Self::GiniIndexOnAfterTaxIncome => 381,
+            Self::P90P10Ratio => 382,
             Self::HouseholdsSpending30PercentOrMoreOfIncomeOnShelter => 1467,
+            Self::ImmigrantStatusTotal => 1528,
             Self::ImmigrantStatusImmigrant => 1529,
             Self::ImmigrantStatusNonImmigrant => 1528,
+            Self::ImmigrantStatusNonPermanentResident => 1530,
             Self::IndigenousIdentityIndigenous => 1403,
             Self::IndigenousIdentityNonIndigenous => 1410,
+            Self::PrivateHouseholdsByTenureTotal => 1414,
             Self::PrivateHouseholdsByTenureOwner => 1415,
             Self::PrivateHouseholdsByTenureRenter => 1416,
             Self::PrivateHouseholdsByTenureBandH => 1417,
+            Self::DwellingConditionTotal => 1449,
+            Self::DwellingConditionRegularMaintenance => 1450,
+            Self::DwellingConditionMajorRepairs => 1451,
+            Self::HousingSuitabilityTotal => 1437,
+            Self::HousingSuitabilitySuitable => 1438,
+            Self::HousingSuitabilityNotSuitable => 1439,
+            Self::MobilityStatusTotal => 1974,
             Self::MobilityStatusMovers => 1976,
             Self::MobilityStatusNonMovers => 1975,
             Self::HighestCertificateNone => 1999,
@@ -250,6 +236,12 @@ impl CensusFilter {
             Self::ParticipationRate => 2228,
             Self::EmploymentRate => 2229,
             Self::UnemploymentRate => 2230,
+            Self::CommutingEmployedLaborForceTotal => 2611,
+            Self::CommutingEmployedLaborForceLessThan15 => 2612,
+            Self::CommutingEmployedLaborForce15To29 => 2613,
+            Self::CommutingEmployedLaborForce30To44 => 2614,
+            Self::CommutingEmployedLaborForce45To59 => 2615,
+            Self::CommutingEmployedLaborForceMoreThan60 => 2616,
             Self::UnknownFilter => 0,
         }
     }
