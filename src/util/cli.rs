@@ -5,6 +5,8 @@ pub struct Cli {
         /// Optional Location of PCCF file, otherwise will default to the current directory
         pub pccf: Option<String>,
         #[clap(long)]
+        pub db: Option<bool>,
+        #[clap(long)]
         pub ourboro: Option<bool>,
         #[clap(long)]
         pub income: Option<bool>,

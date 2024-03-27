@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT OR IGNORE INTO location (dguid, alt_geo_code, geo_level, geo_name) VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "f82de9b4b7a32e27e5c762249e822a5a2f55d2a526b844d4269190c9a82496e4"
+}

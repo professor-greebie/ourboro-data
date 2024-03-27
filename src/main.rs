@@ -4,13 +4,15 @@ use ourboro::util;
 use itertools::izip;
 use ourboro::pccf::postal_code::PostalCode;
 
+
 //static PCCF_TEMP_FILE: &str = "./data/scratch/pccf_temp.txt";
 static CENSUS_DATA_FILE: &str = "98-401-X2021006_English_CSV_data_Ontario.csv";
 static OURBORO_DATA_FILE: &str = "homeowner_postal_code_stats.csv";
 static INPUT_DIRECTORY: &str = "./data/resources/quick";
 static OUTPUT_DIRECTORY: &str = "./data/resources/output";
 
-fn main() {
+#[tokio::main]
+async fn  main() {
     //let temp_vec: Vec<(String, String)> = Vec::new();
     let args: ourboro::util::cli::Cli = ourboro::util::cli::Cli::parse();
     let _ourboro = args.ourboro.unwrap_or(false);
@@ -22,11 +24,23 @@ fn main() {
     let _population = args.population.unwrap_or(false);
     let _population_2016 = args.population_2016.unwrap_or(false);
     let _income = args.income.unwrap_or(false);
+    let _db = args.db;
     //let pccf_line_file = args.pccf.unwrap_or(pccf_path!().to_string());
     let take = args.take.unwrap_or(2);
     let skip: usize = args.skip.unwrap_or(0);
     let filter_postal = args.postal.map(|filter : String| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
     let filter_province = args.province.map(|filter| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
+
+    if _db.is_some() {
+        println!("Creating DB");
+        let db = ourboro::db::sqlite::create_db().await;
+        if db.is_ok() {
+            println!("DB Created");
+        }
+        //let _ = ourboro::db::sqlite::add_census(2021).await;
+        let _ = ourboro::util::io::read_census_csv_to_db_parallel(&format!("{}/{}", INPUT_DIRECTORY, CENSUS_DATA_FILE)).await;
+
+    }
 
     if _xlsx_to_csv.is_some() {
         let filters = vec![0, 139, 140];
@@ -97,13 +111,7 @@ fn main() {
             let combined = format!("{}, {}, {}", a, b.join(", "), c.join(", ")); 
             combined.split(",").map(|x| x.to_string()).collect::<Vec<String>>()
         }).collect::<Vec<Vec<String>>>();
-        for line in final_res.iter() {
-            println!("{:?}", line);
-        }
         final_res.extend(final_result);
-        for line in final_res.iter() {
-            println!("{:?}", line);
-        }
 
         let _ = util::csv_util::write_csv(&output, final_res);
     }

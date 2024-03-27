@@ -1,4 +1,4 @@
-use crate::census::census_model::CensusFilter;
+use crate::census::census_model::{CensusFilter, CensusLineStruct};
 use crate::pccf::PostalCode;
 use crate::util::csv_util;
 use crate::util::cli::Cli;
@@ -6,13 +6,59 @@ use std::collections::VecDeque;
 use std::fs::{self, File};
 use std::io::{self, prelude::*, BufRead};
 use std::path::Path;
-use rayon::iter::ParallelBridge;
-use rayon::prelude::ParallelIterator;
+use rayon::{prelude::*, result};
+use crate::db::sqlite::add_count_result;
+use rayon::iter::ParallelIterator; // Add missing import
 
 
 const TEMP_DIRECTORY: &str = "data/resources/tmp/";
 //const OUTPUT_DIRECTORY: &str = "data/resources/output/";
 const PCCF_TEMP_FILE: &str = "./data/resources/quick/PCCF_FCCP_V2312_2021.txt";
+
+pub async fn read_census_csv_to_db(path: &str)  {
+    //let mut result = VecDeque::new();
+    if let Ok(lines) = read_lines(path) {
+        for line in lines.flatten(){ // skip the header 
+            let cleaned: Vec<String> = csv_util::split_csv_line(&line);
+            if cleaned[0] == "CENSUS_YEAR" {
+                println!("Skipping header");
+                continue;
+            } else {
+                let census_line = CensusLineStruct::from_line(cleaned);
+                println!("Adding line- {}", census_line.characteristic_name);
+                let _ = add_count_result(census_line).await; 
+
+            }
+                    // add censusline to database
+        }
+    }
+    
+}
+
+async fn read_census_line(line: String) -> Result<(), sqlx::Error> {
+    let cleaned: Vec<String> = csv_util::split_csv_line(&line);
+    if cleaned[0] == "CENSUS_YEAR" {
+        println!("Skipping header");
+    } else {
+        let census_line = CensusLineStruct::from_line(cleaned);
+        println!("Adding line- {}", census_line.characteristic_name);
+        let _ = add_count_result(census_line).await; 
+    }
+    Ok(())
+}
+
+pub async fn read_census_csv_to_db_parallel(path: &str)  {
+    //let mut result = VecDeque::new();
+    if let Ok(lines) = read_lines(path) {
+        let result: Vec<_> = lines.flatten().par_bridge() // Use par_bridge() instead of into_par_iter()
+            .map(read_census_line).collect();
+        for res in result {
+            let _ = res.await;
+        }
+    }
+   
+    
+}
 
 pub fn read_and_clean_csv(path: &str) -> Vec<Vec<String>> {
     let mut result = VecDeque::new();

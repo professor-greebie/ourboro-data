@@ -4,6 +4,64 @@ pub struct CensusPopulationStruct {
     pub population: Vec<String>,
 }
 
+pub struct CensusLineStruct {
+    pub year: i64,
+    pub dguid: String,
+    pub alt_geo_code: String,
+    pub geo_level: String,
+    pub geo_name: String,
+    pub total_no_response_short_form: f64,
+    pub total_no_response_long_form: f64,
+    pub data_quality_flag: String,
+    pub characteristic_id: i64,
+    pub characteristic_name: String,
+    pub characteristic_note: String,
+    pub c1_count_total: Option<i64>,
+    pub c1_symbol: String,
+    pub c2_count_men_plus: Option<i64>,
+    pub c2_symbol: String,
+    pub c3_count_women_plus: Option<i64>,
+    pub c3_symbol: String,
+    pub c10_rate_total: Option<f64>,
+    pub c10_symbol: String,
+    pub c11_rate_men_plus: Option<f64>,
+    pub c11_symbol: String,
+    pub c12_rate_women_plus: Option<f64>,
+    pub c12_symbol: String,
+}
+impl CensusLineStruct {
+    pub fn from_line(line: Vec<String>) -> Self {
+        if line.len() != 23 {
+            panic!("Invalid line length for census collection : {}", line.len());
+        }
+        Self {
+            year: line[0].parse::<i64>().unwrap(),
+            dguid: line[1].clone(),
+            alt_geo_code: line[2].clone(),
+            geo_level: line[3].clone(),
+            geo_name: line[4].clone(),
+            total_no_response_short_form: line[5].parse::<f64>().unwrap(),
+            total_no_response_long_form: line[6].parse::<f64>().unwrap(),
+            data_quality_flag: line[7].clone(),
+            characteristic_id: line[8].parse::<i64>().unwrap(),
+            characteristic_name: line[9].clone(),
+            characteristic_note: line[10].clone(),
+            c1_count_total: line[11].parse::<i64>().ok(),
+            c1_symbol: line[12].clone(),
+            c2_count_men_plus: line[13].parse::<i64>().ok(),
+            c2_symbol: line[14].clone(),
+            c3_count_women_plus: line[15].parse::<i64>().ok(),
+            c3_symbol: line[16].clone(),
+            c10_rate_total: line[17].parse::<f64>().ok(),
+            c10_symbol: line[18].clone(),
+            c11_rate_men_plus: line[19].parse::<f64>().ok(),
+            c11_symbol: line[20].clone(),
+            c12_rate_women_plus: line[21].parse::<f64>().ok(),
+            c12_symbol: line[22].clone(),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub enum CensusFilter {
     Population2021,
@@ -71,7 +129,7 @@ pub enum CensusFilter {
     CommutingEmployedLaborForce30To44,
     CommutingEmployedLaborForce45To59,
     CommutingEmployedLaborForceMoreThan60,
-    UnknownFilter
+    UnknownFilter,
 }
 
 impl CensusFilter {
@@ -101,13 +159,15 @@ impl CensusFilter {
             Self::AverageTotalIncomeEconomicFamily => {
                 "average_total_income_economic_family".to_string()
             }
-            Self::AverageAfterTaxIncomeOneParent => "average_after_tax_income_one_parent".to_string(),
+            Self::AverageAfterTaxIncomeOneParent => {
+                "average_after_tax_income_one_parent".to_string()
+            }
             Self::MedianTotalIncomeOneParent => "median_total_income_one_parent".to_string(),
             Self::TotalCensusFamiliesPrivateHouseHolds => {
                 "total_census_families_private_house_holds".to_string()
             }
             Self::MarriedWithChildren => "married_with_children".to_string(),
-        
+
             Self::CommonLawWithChildren => "common_law_with_children".to_string(),
             Self::OneParentFamilies => "one_parent_families".to_string(),
             Self::AverageTotalChildrenPerFamily => "average_total_children_per_family".to_string(),
@@ -124,15 +184,27 @@ impl CensusFilter {
             Self::ImmigrantStatusTotal => "immigrant_status_total".to_string(),
             Self::ImmigrantStatusImmigrant => "immigrant_status_immigrant".to_string(),
             Self::ImmigrantStatusNonImmigrant => "immigrant_status_non_immigrant".to_string(),
-            Self::ImmigrantStatusNonPermanentResident => "immigrant_status_non_permanent_resident".to_string(),
+            Self::ImmigrantStatusNonPermanentResident => {
+                "immigrant_status_non_permanent_resident".to_string()
+            }
             Self::IndigenousIdentityIndigenous => "identity_indigenous".to_string(),
             Self::IndigenousIdentityNonIndigenous => "identity_non_indigenous".to_string(),
-            Self::PrivateHouseholdsByTenureTotal => "private_households_by_tenure_total".to_string(),
-            Self::PrivateHouseholdsByTenureOwner => "private_households_by_tenure_owner".to_string(),
-            Self::PrivateHouseholdsByTenureRenter => "private_households_by_tenure_renter".to_string(),
-            Self::PrivateHouseholdsByTenureBandH => "private_households_by_tenure_band_h".to_string(),
+            Self::PrivateHouseholdsByTenureTotal => {
+                "private_households_by_tenure_total".to_string()
+            }
+            Self::PrivateHouseholdsByTenureOwner => {
+                "private_households_by_tenure_owner".to_string()
+            }
+            Self::PrivateHouseholdsByTenureRenter => {
+                "private_households_by_tenure_renter".to_string()
+            }
+            Self::PrivateHouseholdsByTenureBandH => {
+                "private_households_by_tenure_band_h".to_string()
+            }
             Self::DwellingConditionTotal => "dwelling_condition_total".to_string(),
-            Self::DwellingConditionRegularMaintenance => "dwelling_condition_regular_maintenance".to_string(),
+            Self::DwellingConditionRegularMaintenance => {
+                "dwelling_condition_regular_maintenance".to_string()
+            }
             Self::DwellingConditionMajorRepairs => "dwelling_condition_major_repairs".to_string(),
             Self::HousingSuitabilityTotal => "housing_suitability_total".to_string(),
             Self::HousingSuitabilitySuitable => "housing_suitability_suitable".to_string(),
@@ -153,7 +225,9 @@ impl CensusFilter {
             Self::ParticipationRate => "participation_rate".to_string(),
             Self::EmploymentRate => "employment_rate".to_string(),
             Self::UnemploymentRate => "unemployment_rate".to_string(),
-            Self::CommutingEmployedLaborForceTotal => "commuting_employed_labor_force_total".to_string(),
+            Self::CommutingEmployedLaborForceTotal => {
+                "commuting_employed_labor_force_total".to_string()
+            }
             Self::CommutingEmployedLaborForceLessThan15 => {
                 "commuting_employed_labor_force_less_than_15".to_string()
             }
@@ -170,8 +244,6 @@ impl CensusFilter {
                 "commuting_employed_labor_force_more_than_60".to_string()
             }
             Self::UnknownFilter => "unknown_filter".to_string(),
-
-
         }
     }
 

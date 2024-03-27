@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT OR IGNORE INTO count_result (dguid, charId, total_result, male_plus_result, female_plus_result, total_rate, male_plus_rate, female_plus_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 8
+    },
+    "nullable": []
+  },
+  "hash": "299f8d8a0add4e01855c6e84f8578a07e4fe4025979ba389bc13d29e588cae8c"
+}

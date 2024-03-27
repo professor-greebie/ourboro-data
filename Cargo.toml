@@ -12,4 +12,6 @@ csv = "1.3.0"
 itertools = "0.12.1"
 rayon = "1.8.0"
 regex = "1.10.2"
+sqlx = {version = "0.7.4", features=["runtime-tokio-native-tls", "sqlite", "macros"]}
 struct_iterable = "0.1.1"
+tokio = {version = "1.36.0", features = ["full"] }
