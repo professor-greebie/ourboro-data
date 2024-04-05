@@ -32,13 +32,17 @@ async fn  main() {
     let filter_province = args.province.map(|filter| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
 
     if _db.is_some() {
+        
+
         println!("Creating DB");
         let db = ourboro::db::sqlite::create_db().await;
         if db.is_ok() {
             println!("DB Created");
         }
         //let _ = ourboro::db::sqlite::add_census(2021).await;
-        let _ = ourboro::util::io::read_census_csv_to_db_parallel(&format!("{}/{}", INPUT_DIRECTORY, CENSUS_DATA_FILE)).await;
+        println!("Adding PCCF Data");
+        let _ = ourboro::util::io::read_pccf_data_to_db_parallel().await;
+        //let _ = ourboro::util::io::read_census_csv_to_db_parallel(&format!("{}/{}", INPUT_DIRECTORY, CENSUS_DATA_FILE), skip).await;
 
     }
 

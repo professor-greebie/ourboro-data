@@ -6,9 +6,11 @@ use std::collections::VecDeque;
 use std::fs::{self, File};
 use std::io::{self, prelude::*, BufRead};
 use std::path::Path;
-use rayon::{prelude::*, result};
+use rayon::prelude::*;
 use crate::db::sqlite::add_count_result;
-use rayon::iter::ParallelIterator; // Add missing import
+use crate::db::sqlite::add_pccf_entry;
+use rayon::iter::ParallelIterator; //d missing import
+use futures::stream::StreamExt;
 
 
 const TEMP_DIRECTORY: &str = "data/resources/tmp/";
@@ -35,26 +37,37 @@ pub async fn read_census_csv_to_db(path: &str)  {
     
 }
 
-async fn read_census_line(line: String) -> Result<(), sqlx::Error> {
+pub async fn read_pccf_data_to_db_parallel() -> () {
+    if let Ok(lines) = read_lines(PCCF_TEMP_FILE) {
+
+        let pccf_stream = futures::stream::iter(lines.flatten());
+        
+        let _ = pccf_stream.for_each_concurrent(12, read_pccf_line).await;
+    }
+}
+
+async fn read_census_line(line: String) -> () {
     let cleaned: Vec<String> = csv_util::split_csv_line(&line);
     if cleaned[0] == "CENSUS_YEAR" {
         println!("Skipping header");
     } else {
         let census_line = CensusLineStruct::from_line(cleaned);
-        println!("Adding line- {}", census_line.characteristic_name);
+        //println!("Adding line- {}", census_line.characteristic_name);
         let _ = add_count_result(census_line).await; 
     }
-    Ok(())
 }
 
-pub async fn read_census_csv_to_db_parallel(path: &str)  {
+async fn read_pccf_line(line: String) -> () {
+    let cleaned: PostalCode = PostalCode::from(&line);
+    let _ = add_pccf_entry(cleaned, None).await;
+}
+
+pub async fn read_census_csv_to_db_parallel(path: &str, skip: usize)  {
     //let mut result = VecDeque::new();
     if let Ok(lines) = read_lines(path) {
-        let result: Vec<_> = lines.flatten().par_bridge() // Use par_bridge() instead of into_par_iter()
-            .map(read_census_line).collect();
-        for res in result {
-            let _ = res.await;
-        }
+        let census_stream = futures::stream::iter(lines.flatten().skip(skip));
+        
+        let _ = census_stream.for_each_concurrent(12, read_census_line).await;
     }
    
     

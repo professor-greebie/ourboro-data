@@ -1,10 +1,46 @@
+use postal_code::PostalCode;
 use sqlx::migrate::MigrateDatabase;
 use std::env;
 use sqlx::sqlite::SqlitePool;
 use sqlx::Sqlite;
 use crate::census::census_model::CensusLineStruct;
+use crate::pccf::postal_code;
 
 const DB_URL: &str = "sqlite://data/scratch/ourboro.db";
+
+pub async fn add_pccf_entry(postal_code : PostalCode, sample: Option<bool>) -> Result<(), sqlx::Error>{
+    if !Sqlite::database_exists(&DB_URL).await? {
+        create_db().await?;
+    }
+    if sample.is_some() && sample.unwrap() {
+        add_pccf_entry_sample(postal_code).await?;
+    } else {
+        add_pccf_entry_full(postal_code).await?;
+    }
+    Ok(())
+}
+
+pub async fn add_pccf_entry_full(postal_code : PostalCode) -> Result<(), sqlx::Error>{
+    let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| DB_URL.to_string());
+    let pool = SqlitePool::connect(&database_url).await?;
+    let conn = &pool;
+    let _pccf = sqlx::query!(
+        "INSERT OR IGNORE INTO postal_code_data (postal_code, dguid, location_name, province, lat, lon, community_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        postal_code._postal_code, postal_code._dguid, postal_code._census_subdivision_name, postal_code._province, postal_code._point_latitude, postal_code._point_longitude, postal_code._community_name);
+    _pccf.execute(conn).await?;
+    Ok(())
+    }
+
+pub async fn add_pccf_entry_sample(postal_code : PostalCode) -> Result<(), sqlx::Error>{
+    let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| DB_URL.to_string());
+    let pool = SqlitePool::connect(&database_url).await?;
+    let conn = &pool;
+    let _pccf = sqlx::query!(
+        "INSERT OR IGNORE INTO postal_code_data_sample (postal_code, dguid, location_name, province, lat, lon, community_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        postal_code._postal_code, postal_code._dguid, postal_code._census_subdivision_name, postal_code._province, postal_code._point_latitude, postal_code._point_longitude, postal_code._community_name);
+    _pccf.execute(conn).await?;
+    Ok(())
+}
 
 pub async fn create_db() -> Result<(), sqlx::Error> {
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| DB_URL.to_string());

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT OR IGNORE INTO postal_code_data_sample (postal_code, dguid, location_name, province, lat, lon, community_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 7
+    },
+    "nullable": []
+  },
+  "hash": "6d17e5152dc2965e9730dec7394dafeb5e4b87733dc3d2de644d84ab96272f12"
+}
