@@ -30,6 +30,29 @@ async fn  main() {
     let skip: usize = args.skip.unwrap_or(0);
     let filter_postal = args.postal.map(|filter : String| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
     let filter_province = args.province.map(|filter| filter.chars().filter(|c| !c.is_whitespace()).collect::<String>().to_uppercase());
+    let create_sql = args.create_sql.unwrap_or(false);
+    let _use_db = args.all.unwrap_or(false);
+
+    if create_sql {
+
+        println!("Creating SQL Query");
+        let input_file = if _input.is_some() { _input.clone().unwrap()} else { "angus_input.csv".to_string() };
+        let input = format!("{}/{}", INPUT_DIRECTORY, input_file);
+        let headers = _vector_of_filters.clone();
+        let data = ourboro::util::io::read_and_clean_csv(&input);
+        let ids = data.clone().into_iter().map(|x| x[0].clone()).collect::<Vec<String>>();
+        let dataB = data.clone().into_iter().map(|x| format!("\'{}\'", x[1].clone())).collect::<Vec<String>>();
+        let dataC = data.clone().into_iter().map(|x| format!("\'{}\'", x[2].clone())).collect::<Vec<String>>();
+        let queryA = ourboro::db::sqlite::generate_sql_query(headers.clone(), dataB);
+        let queryB = ourboro::db::sqlite::generate_sql_query(headers.clone(), dataC);
+        let temp_vecA = queryA.split("\n").map(|x| x.to_string()).collect::<Vec<String>>();
+        let temp_vecB = queryB.split("\n").map(|x| x.to_string()).collect::<Vec<String>>();
+        let filenameA = "queryA.sql";
+        let filenameB = "queryB.sql";
+        let _ = ourboro::util::io::write_lines_temp(temp_vecA, filenameA.to_string());
+        let _ = ourboro::util::io::write_lines_temp(temp_vecB, filenameB.to_string());
+
+    }
 
     if _db.is_some() {
         
@@ -47,13 +70,14 @@ async fn  main() {
     }
 
     if _xlsx_to_csv.is_some() {
-        let filters = vec![0, 139, 140];
+        //let filters = vec![0, 139, 140]; // ois
+        let filters = vec![0, 151, 152]; // dynata angus
         let xlsx_to_csv = if _input.clone().is_some() { format!("{}/{}", INPUT_DIRECTORY, _input.clone().unwrap()) } else { format!("{}/{}", INPUT_DIRECTORY, "default_xls_file.xlsx") };
         let output_file = if _output.clone().is_some() { format!("{}/{}", OUTPUT_DIRECTORY, _output.clone().unwrap()) } else { format!("{}/{}", OUTPUT_DIRECTORY, "output_data.csv".to_string()) };
         println!("{:?}", output_file);
         println!("{:?}", xlsx_to_csv);
         if xlsx_to_csv.ends_with(".xlsx") {
-            let _ = util::csv_util::xlsx_to_csv(&output_file, filters);
+            let _ = util::csv_util::xlsx_to_csv(&xlsx_to_csv, filters);
         }
         if xlsx_to_csv.ends_with(".csv") {
             let csv = util::io::read_and_clean_csv(&xlsx_to_csv);
@@ -87,6 +111,8 @@ async fn  main() {
         let output = format!("{}/{}", OUTPUT_DIRECTORY, output_file);
         //println!("{:?}", input);
         let comparator_postal_codes: Vec<Vec<String>> = ourboro::util::io::read_and_clean_csv(&input);
+
+        
         let ids = comparator_postal_codes.clone().into_iter().map(|x| x[0].clone()).collect::<Vec<String>>();
         let group_a = comparator_postal_codes.clone().into_iter().map(|x| x[1].clone()).collect::<Vec<String>>();
         let group_b = comparator_postal_codes.clone().into_iter().map(|x| x[2].clone()).collect::<Vec<String>>();

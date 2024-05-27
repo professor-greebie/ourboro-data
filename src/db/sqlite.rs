@@ -1,14 +1,85 @@
+use crate::census::census_model::{CensusFilter, CensusLineStruct};
+use crate::pccf::postal_code;
 use postal_code::PostalCode;
 use sqlx::migrate::MigrateDatabase;
-use std::env;
 use sqlx::sqlite::SqlitePool;
 use sqlx::Sqlite;
-use crate::census::census_model::CensusLineStruct;
-use crate::pccf::postal_code;
+use std::env;
 
 const DB_URL: &str = "sqlite://data/scratch/ourboro.db";
 
-pub async fn add_pccf_entry(postal_code : PostalCode, sample: Option<bool>) -> Result<(), sqlx::Error>{
+enum KnownTable {
+    AngusStart,
+    AngusFinish,
+    OISStart, 
+    OISFinish,
+    OurboroStart,
+    OurboroFinish,
+}
+
+impl KnownTable {
+    fn query(&self) -> &'static str {
+        match self {
+            KnownTable::AngusStart => "SELECT * FROM angus_data_a WHERE postal_code = ?",
+            KnownTable::AngusFinish => "SELECT * FROM angus_data_b WHERE postal_code = ?",
+            KnownTable::OISStart => "SELECT * FROM ois_data_a WHERE postal_code = ?",
+            KnownTable::OISFinish => "SELECT * FROM ois_data_b WHERE postal_code = ?",
+            KnownTable::OurboroStart => "SELECT * FROM ourboro_data_a WHERE postal_code = ?",
+            KnownTable::OurboroFinish => "SELECT * FROM ourboro_data_b WHERE postal_code = ?",
+        }
+    }
+}
+
+pub fn generate_sql_query(
+    census_items: Vec<CensusFilter>,
+    postal_codes: Vec<String>,
+) -> String {
+    let census_query = census_items
+        .iter()
+        .map(|census_item| {
+            format!(
+                "MAX(CASE WHEN count_result.charId = {} THEN count_result.total_result END) AS {}\n",
+                census_item.filter_column(),
+                census_item.cache_name()
+            )
+        })
+        .collect::<Vec<String>>()
+        .join(", ");
+    let postal_code_query = format!("WHERE postal_code_data.postal_code IN ({})", postal_codes.join(", "));
+    format!("SELECT postal_code_data.postal_code, postal_code_data.lat, postal_code_data.lon, location.geo_name, \n{}
+      FROM location
+      INNER JOIN 
+         postal_code_data ON location.alt_geo_code=SUBSTRING(postal_code_data.dguid, 1, LENGTH(postal_code_data.dguid))
+      INNER JOIN
+         count_result ON location.dguid=count_result.dguid
+      {} 
+      GROUP BY postal_code_data.postal_code", census_query, postal_code_query)
+}
+/**
+pub async fn get_data_line_by_postal_codes_A(
+    postal_codes: Vec<String>, table : KnownTable 
+) -> Result<(), sqlx::Error> {
+    for postal_code in postal_codes {
+        let postal_code_query = sqlx::query!("SELECT * FROM angus_data_a WHERE postal_code=?", postal_code);
+    }
+    Ok(())
+}
+ 
+pub async fn get_data_line_by_postal_codes_B(
+    postal_codes: Vec<String>, table : KnownTable 
+) -> Result<(), sqlx::Error> {
+    for postal_code in postal_codes {
+        let postal_code_query = sqlx::query!("SELECT * FROM angus_data_b WHERE postal_code=?", postal_code);
+    }
+    Ok(())
+}
+
+*/
+
+pub async fn add_pccf_entry(
+    postal_code: PostalCode,
+    sample: Option<bool>,
+) -> Result<(), sqlx::Error> {
     if !Sqlite::database_exists(&DB_URL).await? {
         create_db().await?;
     }
@@ -20,7 +91,7 @@ pub async fn add_pccf_entry(postal_code : PostalCode, sample: Option<bool>) -> R
     Ok(())
 }
 
-pub async fn add_pccf_entry_full(postal_code : PostalCode) -> Result<(), sqlx::Error>{
+pub async fn add_pccf_entry_full(postal_code: PostalCode) -> Result<(), sqlx::Error> {
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| DB_URL.to_string());
     let pool = SqlitePool::connect(&database_url).await?;
     let conn = &pool;
@@ -29,9 +100,9 @@ pub async fn add_pccf_entry_full(postal_code : PostalCode) -> Result<(), sqlx::E
         postal_code._postal_code, postal_code._dguid, postal_code._census_subdivision_name, postal_code._province, postal_code._point_latitude, postal_code._point_longitude, postal_code._community_name);
     _pccf.execute(conn).await?;
     Ok(())
-    }
+}
 
-pub async fn add_pccf_entry_sample(postal_code : PostalCode) -> Result<(), sqlx::Error>{
+pub async fn add_pccf_entry_sample(postal_code: PostalCode) -> Result<(), sqlx::Error> {
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| DB_URL.to_string());
     let pool = SqlitePool::connect(&database_url).await?;
     let conn = &pool;

@@ -1,6 +1,11 @@
 
 ## Application Approach
 
+## Here is our database
+
+- [ ] TODO A
+- [ ] TODO B
+
 
 ```mermaid
 
@@ -40,10 +45,21 @@ erDiagram
         numeric female_plus_rate
     }
 
+    POSTAL_CODE_DATA {
+        String postal_code PK
+        String dguid
+        String location_name
+        String province
+        numeric lat
+        numeric lon
+        String community_name
+    }
+
     LOCATION ||--o| DATA_QUALITY : has
     COUNT_RESULT }o--|{ LOCATION : in
     COUNT_RESULT |o--|{ CHARACTERISTIC : by
     CENSUS ||--|{ LOCATION : in
+    POSTAL_CODE_DATA }|--|{ LOCATION : demarks
 
 
 ```

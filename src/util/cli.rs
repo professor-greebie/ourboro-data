@@ -38,11 +38,14 @@ pub struct Cli {
         #[clap(short, long)]
         /// Optional location of the output file, otherwise will default to the current directory
         pub input: Option<String>,
+        #[clap(long)]
+        pub use_db: Option<bool>,
         
         #[clap(short, long)]
         /// Optional location of the output file, otherwise will default to the current directory
         pub output: Option<String>,
-        
+        #[clap(long)]
+        pub create_sql: Option<bool>,
         #[clap(short, long)]
         /// Convert the xlsx file in the located path to a csv file
         pub xlsx: Option<String>,
