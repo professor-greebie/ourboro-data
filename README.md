@@ -2,24 +2,26 @@
 
 ## Overview
 
-The **Ourboro Data System** is a Rust-based data enrichment pipeline that connects **survey data containing postal codes** with **Canadian census data** through geographic mapping.
+The Ourboro Data System is a data processing pipeline that enriches survey data by linking postal codes to Canadian census geographic and statistical data.
 
-Survey datasets alone are limited because postal codes do not directly provide socioeconomic context. This system enriches those records by linking postal codes to standardized geographic identifiers and then attaching census-level statistics.
+The system supports:
 
-The final output is an **analysis-ready dataset** that combines individual survey responses with regional demographic and socioeconomic indicators.
+- Mapping postal codes to standardized geographic regions
+- Attaching census-level statistics (population, housing, income, etc.)
+- Supporting geographic comparison across different areas
+- Generating enriched datasets for downstream analysis
+
+It supports CLI-based execution for different data processing workflows such as database initialization, data conversion, and full pipeline execution.
 
 ---
 
-## Purpose
+## Requirements
 
-The purpose of this system is to transform raw survey data into context-rich datasets that enable deeper analysis of relationships between individuals and their environments.
+- PCCF (Postal Code Conversion File)
 
-In particular, the system allows researchers to:
+PCCF is a Statistics Canada dataset used to map postal codes to geographic identifiers (DGUIDs).
 
-- Map postal codes to standardized geographic regions
-- Attach census-level statistics (population, housing, income, etc.)
-- Enable region-aware interpretation of survey responses
-- Support comparative analysis across geographic areas
+Access to the PCCF dataset is required to use PCCF-based mapping features. The dataset may require institutional access, licensing, or purchase depending on usage.
 
 ---
 
@@ -111,6 +113,14 @@ When the program starts, CLI arguments are parsed into a configuration object, a
 
 These modes can be combined to execute multiple workflows in a single run.
 
+### Example Command
+
+To run the full enrichment pipeline:
+
+```text
+cargo run -- --ourboro --input input.csv --output output.csv
+```
+
 ---
 
 ## Input Configuration Options
@@ -127,42 +137,26 @@ In addition to execution modes, the system supports configurable inputs:
 
 ---
 
-## Design Rationale
+## Ourboro Mode Details
 
-This system is designed as a **modular data processing engine** with runtime-configurable behavior.
+### Paired Postal Code Analysis (`--ourboro` Mode)
 
-### Key design principles:
+This mode is designed for analyzing before-and-after relocation data.
 
-- **Modularity**: Each function (PCCF, census, DB, utilities) is isolated
-- **Flexibility**: Multiple execution modes via CLI flags
-- **Scalability**: New pipelines can be added without restructuring core logic
-- **Reproducibility**: Same pipeline can be executed consistently via CLI
-
----
-
-## Advanced Analysis: Group A/B Structure
-
-Some datasets used by this system contain paired postal codes in the following format:
-
-```text id="kq2l1m"
-user_id | postal_code_A | postal_code_B
-```
-### Interpretation
-
-- **Group A**: First geographic region  
-- **Group B**: Comparison region  
-
-Each group is independently mapped through:
+### Input Data Format
 
 ```text
-Postal Code → DGUID → Census Data
+user_id | starting_postal_code | finishing_postal_code
 ```
+- Starting Postal Code: Original location
+- Finishing Postal Code: New location
 
-### Purpose
+### Processing Flow
 
-This structure enables **comparative regional analysis**, allowing researchers to examine how different geographic contexts may influence survey responses.
+- Starting postal code → DGUID → Census data enrichment  
+- Finishing postal code → DGUID → Census data enrichment  
 
-> Note: This is not a “real vs synthetic” distinction. Both A and B are pre-defined input fields used for comparative analysis.
+Both results are combined into a single output row for comparison.
 
 ---
 
@@ -174,7 +168,7 @@ The final dataset includes:
 - Postal codes  
 - DGUID geographic identifiers  
 - Census attributes (income, population, housing, etc.)  
-- Optional comparative group analysis (A vs B)
+- Starting and finishing location data (when using `--ourboro` mode)
 
 ---
 
@@ -196,3 +190,5 @@ The Ourboro Data System is a **geospatial data enrichment pipeline** that transf
 
 This allows individual survey responses to be interpreted within their broader socioeconomic and regional context.
 
+
+  
