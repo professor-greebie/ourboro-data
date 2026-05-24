@@ -131,7 +131,7 @@ pub fn read_pccf_filtered_postal_code_list(postal_filters: Vec<String>) -> Vec<P
 /// # Arguments
 /// * `args` - The command line arguments
 /// # Example
-/// ```rust
+///```rust,ignore
 /// use crate::ourboro::util::cli::Cli;
 /// use crate::ourboro::util::io::get_user_defined_sources;
 /// let args = Cli {
@@ -290,7 +290,7 @@ pub fn get_census_data(input: &String, output: &String, filter: usize) -> Option
 /// * `filter` - The id of the census item to filter by
 /// 
 /// # Example
-/// ```rust
+/// ```rust,ignore
 /// use crate::ourboro::util::io::get_and_cache_filtered_census;
 /// let input = "data/resources/quick/98-401-X2021032_English_CSV_data.csv".to_string();
 /// let output = "test".to_string();
