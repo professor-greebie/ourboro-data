@@ -40,17 +40,17 @@ async fn  main() {
         let input = format!("{}/{}", INPUT_DIRECTORY, input_file);
         let headers = _vector_of_filters.clone();
         let data = ourboro::util::io::read_and_clean_csv(&input);
-        let ids = data.clone().into_iter().map(|x| x[0].clone()).collect::<Vec<String>>();
-        let dataB = data.clone().into_iter().map(|x| format!("\'{}\'", x[1].clone())).collect::<Vec<String>>();
-        let dataC = data.clone().into_iter().map(|x| format!("\'{}\'", x[2].clone())).collect::<Vec<String>>();
-        let queryA = ourboro::db::sqlite::generate_sql_query(headers.clone(), dataB);
-        let queryB = ourboro::db::sqlite::generate_sql_query(headers.clone(), dataC);
-        let temp_vecA = queryA.split("\n").map(|x| x.to_string()).collect::<Vec<String>>();
-        let temp_vecB = queryB.split("\n").map(|x| x.to_string()).collect::<Vec<String>>();
-        let filenameA = "queryA.sql";
-        let filenameB = "queryB.sql";
-        let _ = ourboro::util::io::write_lines_temp(temp_vecA, filenameA.to_string());
-        let _ = ourboro::util::io::write_lines_temp(temp_vecB, filenameB.to_string());
+        let _ids = data.clone().into_iter().map(|x| x[0].clone()).collect::<Vec<String>>();
+        let data_b = data.clone().into_iter().map(|x| format!("\'{}\'", x[1].clone())).collect::<Vec<String>>();
+        let data_c = data.clone().into_iter().map(|x| format!("\'{}\'", x[2].clone())).collect::<Vec<String>>();
+        let query_a = ourboro::db::sqlite::generate_sql_query(headers.clone(), data_b);
+        let query_b = ourboro::db::sqlite::generate_sql_query(headers.clone(), data_c);
+        let temp_vec_a = query_a.split("\n").map(|x| x.to_string()).collect::<Vec<String>>();
+        let temp_vec_b = query_b.split("\n").map(|x| x.to_string()).collect::<Vec<String>>();
+        let filename_a = "queryA.sql";
+        let filename_b = "queryB.sql";
+        let _ = ourboro::util::io::write_lines_temp(temp_vec_a, filename_a.to_string());
+        let _ = ourboro::util::io::write_lines_temp(temp_vec_b, filename_b.to_string());
 
     }
 

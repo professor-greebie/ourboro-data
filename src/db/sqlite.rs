@@ -8,6 +8,7 @@ use std::env;
 
 const DB_URL: &str = "sqlite://data/scratch/ourboro.db";
 
+#[allow(dead_code)]
 enum KnownTable {
     AngusStart,
     AngusFinish,
@@ -17,6 +18,7 @@ enum KnownTable {
     OurboroFinish,
 }
 
+#[allow(dead_code)]
 impl KnownTable {
     fn query(&self) -> &'static str {
         match self {
