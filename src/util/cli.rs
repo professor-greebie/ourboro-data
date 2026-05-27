@@ -9,6 +9,8 @@ pub struct Cli {
         #[clap(long)]
         pub ourboro: Option<bool>,
         #[clap(long)]
+        pub paired_compare: Option<bool>,
+        #[clap(long)]
         pub income: Option<bool>,
         #[clap(long)]
         pub all: Option<bool>,
