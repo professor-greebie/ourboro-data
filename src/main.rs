@@ -15,8 +15,9 @@ static OUTPUT_DIRECTORY: &str = "./data/resources/output";
 async fn  main() {
     //let temp_vec: Vec<(String, String)> = Vec::new();
     let args: ourboro::util::cli::Cli = ourboro::util::cli::Cli::parse();
-    let _ourboro = args.ourboro.unwrap_or(false);
     let _output = args.output.clone();
+    let paired_compare_mode = 
+        args.ourboro.unwrap_or(false) || args.paired_compare.unwrap_or(false);
     let _input = args.input.clone();
     let _vector_of_filters = ourboro::util::io::get_user_defined_sources(&args);
     let _sample = args.sample.unwrap_or(false);
@@ -89,8 +90,7 @@ async fn  main() {
     //pccf_data.iter().for_each(|pc| println!("{:?}", pc.dguid));
     
     // Specific to the ourboro project
-    if _ourboro {
-
+    if paired_compare_mode {
         // Create headers for the output file
 
         let headers = _vector_of_filters.clone().iter().map(|filter| filter.cache_name()).collect::<Vec<String>>();
@@ -157,7 +157,7 @@ async fn  main() {
 
 
 
-    if !_vector_of_filters.is_empty() && !_ourboro {
+    if !_vector_of_filters.is_empty() && !paired_compare_mode {
         println!("Attempting to create filter");
         let pccf_data = ourboro::util::io::read_pccf(filter_postal, filter_province);
 
