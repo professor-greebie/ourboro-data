@@ -4,7 +4,7 @@ use postal_code::PostalCode;
 use sqlx::migrate::MigrateDatabase;
 use sqlx::sqlite::SqlitePool;
 use sqlx::Sqlite;
-use std::env;
+use std::{env, fs};
 
 const DB_URL: &str = "sqlite://data/scratch/ourboro.db";
 
@@ -118,9 +118,11 @@ pub async fn add_pccf_entry_sample(postal_code: PostalCode) -> Result<(), sqlx::
 pub async fn create_db() -> Result<(), sqlx::Error> {
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| DB_URL.to_string());
     let pool = SqlitePool::connect(&database_url).await?;
-    let conn = &pool;
-    let sql = sqlx::query_file!("data/resources/quick/schema.sql");
-    sql.execute(conn).await?;
+    
+    let schema = fs::read_to_string("data/resources/quick/schema.sql").map_err(sqlx::Error::Io)?;
+
+    sqlx::raw_sql(&schema).execute(&pool).await?;
+
     Ok(())
 }
 
